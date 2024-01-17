@@ -2,6 +2,9 @@
 
 https://shotdeck.com/
 
+https://shotdeck.com/browse/stills#
+
+
 * https://paperswithcode.com/datasets?task=image-inpainting
 
 https://paperswithcode.com/dataset/imagenet
