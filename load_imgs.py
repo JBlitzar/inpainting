@@ -28,6 +28,7 @@ for img in tqdm(glob.glob("images/*")):
     print(arr.shape)
     imgs.append(arr)
 imgs = np.array(imgs)
-print(imgs.shape)
+transposed_data = np.transpose(imgs, (0, 3, 1, 2))
+print(transposed_data.shape)
 with open("images.pickle", 'wb+') as file:
-    pickle.dump(imgs, file)
+    pickle.dump(transposed_data, file)

@@ -66,14 +66,19 @@ print("model initialized")
 # Training loop
 for epoch in tqdm.trange(num_epochs):
     for data in tqdm.tqdm(splitted_data):
-        print(data.shape)
-        inputs = data.view(data.size(0), -1)
-
+        #print(data.shape)
+        #inputs = data.view(data.size(0), -1)
+        inputs = data
         optimizer.zero_grad()
+        print("zeroed")
         outputs = model(inputs)
+        print("evalled")
         loss = criterion(outputs, inputs)
+        print("lossed")
         loss.backward()
+        print("backwarded")
         optimizer.step()
+        print("stepped")
 
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
     torch.save(model.state_dict(), 'unsplash_autoencoder.pth')
