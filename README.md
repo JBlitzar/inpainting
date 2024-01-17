@@ -1,5 +1,6 @@
 # inpainting
 
+https://shotdeck.com/
 
 https://github.com/JBlitzar/cnn-experiments
 
