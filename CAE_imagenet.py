@@ -83,7 +83,7 @@ for epoch in tqdm.trange(num_epochs):
         optimizer.step()
 
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
-    torch.save(model.state_dict(), 'unsplash_autoencoder.pth')
+    torch.save(model.state_dict(), 'CAEimgenet.pth')
 
 # Save the trained model if needed
-torch.save(model.state_dict(), 'unsplash_autoencoder.pth')
+torch.save(model.state_dict(), 'CAEimgnet.pth')
