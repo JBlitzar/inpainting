@@ -2,6 +2,12 @@
 
 https://shotdeck.com/
 
+https://paperswithcode.com/datasets?task=image-inpainting
+
+https://paperswithcode.com/dataset/imagenet
+
+https://paperswithcode.com/dataset/unsplash-1k
+
 https://github.com/JBlitzar/cnn-experiments
 
 
