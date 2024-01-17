@@ -1,5 +1,7 @@
 # inpainting
 
+TINY IMAGENET http://cs231n.stanford.edu/tiny-imagenet-200.zip
+
 https://shotdeck.com/
 
 https://shotdeck.com/browse/stills#
