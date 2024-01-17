@@ -4,20 +4,25 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import tqdm
+import pickle
 print("imported")
 # Set random seed for reproducibility
-torch.manual_seed(42)
 learning_rate = 0.001
 batch_size = 64
 num_epochs = 10
-# MNIST dataset
-transform = transforms.Compose(
-    [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+def unpickle(file):
+    with open(file, 'rb') as fo:
+        dict = pickle.load(fo, encoding='bytes')
+    return dict
 
-mnist_dataset = datasets.MNIST(
-    root='./data', train=True, transform=transform, download=True)
-data_loader = DataLoader(dataset=mnist_dataset,
-                         batch_size=batch_size, shuffle=True)
+data = unpickle("images.pickle")
+dataset = data["images.pickle"]
+sections_size = 100
+splitted_data = torch.split(dataset, sections_size)
+print("Data loaded.")
+print("Data:", dataset)
+print("Shapes:")
+print(dataset.size())
 print("data loaded")
 
 
