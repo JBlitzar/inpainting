@@ -28,5 +28,6 @@ for img in tqdm(glob.glob("images/*")):
     print(arr.shape)
     imgs.append(arr)
 imgs = np.array(imgs)
+print(imgs.shape)
 with open("images.pickle", 'wb+') as file:
-    pickle.dump(object, file)
+    pickle.dump(imgs, file)

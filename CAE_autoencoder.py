@@ -16,7 +16,8 @@ def unpickle(file):
     return dict
 
 data = unpickle("images.pickle")
-dataset = data["images.pickle"]
+print(data)
+dataset = torch.Tensor(data)
 sections_size = 100
 splitted_data = torch.split(dataset, sections_size)
 print("Data loaded.")
@@ -64,7 +65,8 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 print("model initialized")
 # Training loop
 for epoch in tqdm.trange(num_epochs):
-    for data, _ in tqdm.tqdm(data_loader):
+    for data in tqdm.tqdm(splitted_data):
+        print(data.shape)
         inputs = data.view(data.size(0), -1)
 
         optimizer.zero_grad()
