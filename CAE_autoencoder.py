@@ -18,7 +18,7 @@ def unpickle(file):
 data = unpickle("images.pickle")
 print(data)
 dataset = torch.Tensor(data)
-sections_size = 100
+sections_size = batch_size
 splitted_data = torch.split(dataset, sections_size)
 print("Data loaded.")
 print("Data:", dataset)

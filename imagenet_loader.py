@@ -22,7 +22,7 @@ def loadnsave(fileglob, output):
             arr = np.concatenate([e, e, e], axis=-1)
             assert arr.shape == first_shape
         #print(arr.shape)
-        imgs.append(arr)
+        imgs.append(np.transpose(arr, (2, 0, 1)))
 
     
     imgs = np.array(imgs)

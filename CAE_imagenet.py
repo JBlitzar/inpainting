@@ -10,13 +10,20 @@ print("imported")
 learning_rate = 0.001
 batch_size = 64
 num_epochs = 10
-transform = transforms.Compose(
-    [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+def unpickle(file):
+    with open(file, 'rb') as fo:
+        dict = pickle.load(fo, encoding='bytes')
+    return dict
 
-ImageNet_dataset = datasets.ImageNet(
-    root='./data', train=True, transform=transform, download=True)
-data_loader = DataLoader(dataset=ImageNet_dataset,
-                         batch_size=batch_size, shuffle=True)
+data = unpickle("imgnet_train.pickle")
+print(data)
+dataset = torch.Tensor(data)
+sections_size = 100
+splitted_data = torch.split(dataset, sections_size)
+print("Data loaded.")
+print("Data:", dataset)
+print("Shapes:")
+print(dataset.size())
 print("data loaded")
 
 
@@ -58,20 +65,22 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 print("model initialized")
 # Training loop
 for epoch in tqdm.trange(num_epochs):
-    for data, _ in tqdm.tqdm(data_loader):
+    pbar = tqdm.tqdm(splitted_data)
+    current_loss = 0
+    for data in pbar:
         #print(data.shape)
         #inputs = data.view(data.size(0), -1)
         inputs = data
         optimizer.zero_grad()
-        print("zeroed")
+        pbar.set_description(f"Loss: {current_loss} | eval...")
         outputs = model(inputs)
-        print("evalled")
+        pbar.set_description(f"Loss: {current_loss} | loss...")
         loss = criterion(outputs, inputs)
-        print("lossed")
+        current_loss = loss
+        pbar.set_description(f"Loss: {current_loss} | backprop...")
         loss.backward()
-        print("backwarded")
+        pbar.set_description(f"Loss: {current_loss} | Done!")
         optimizer.step()
-        print("stepped")
 
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
     torch.save(model.state_dict(), 'unsplash_autoencoder.pth')
