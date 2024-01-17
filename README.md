@@ -8,6 +8,8 @@ https://paperswithcode.com/dataset/imagenet
 
 https://paperswithcode.com/dataset/unsplash-1k
 
+https://www.kaggle.com/datasets/quadeer15sh/image-super-resolution-from-unsplash
+
 https://github.com/JBlitzar/cnn-experiments
 
 
