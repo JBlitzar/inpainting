@@ -22,6 +22,7 @@ def test(_=None):
     try:
         net.load_state_dict(torch.load(PATH))
         print(net.state_dict)
+        print(f"Loaded from: {PATH}")
     except Exception as e:
         print(e)
         print("Cancelled model loading")

@@ -53,3 +53,39 @@ class Autoencoder_CAE(nn.Module):
         x = self.decoder(x)
         x = x * 255
         return x
+    
+class Autoencoder_CAEv2(nn.Module):
+    def __init__(self):
+        super(Autoencoder_CAE, self).__init__()
+
+        # Define encoder layers
+        self.encoder = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(64), nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(64), nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Flatten()
+        )
+
+        # Define decoder layers
+        self.decoder = nn.Sequential(
+            nn.Conv2d(256, 128, kernel_size=3, stride=1, padding=1),
+            nn.MaxPool2d(2),
+            nn.BatchNorm2d(64),nn.ReLU(),
+            nn.Conv2d(128, 64, kernel_size=3, stride=1, padding=1),
+            nn.MaxPool2d(2),
+            nn.BatchNorm2d(64),nn.ReLU(),
+            nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        # Define forward pass
+        x = self.encoder(x)
+        x = self.decoder(x)
+        x = x * 255
+        return x
