@@ -10,7 +10,7 @@ def unpickle(file):
         dict = pickle.load(fo, encoding='bytes')
     return dict
 
-data = unpickle("imgnet_train.pickle")
+data = unpickle("imgnet_test.pickle")
 print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)
