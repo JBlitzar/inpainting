@@ -23,6 +23,7 @@ try:
 except Exception as e:
     print(e)
     print("Cancelled model loading")
+    exit()
 item = data[random.randint(0,len(data)-1)]
 input_ = np.array([item])
 input_ = torch.Tensor(input_)
