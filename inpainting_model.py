@@ -82,7 +82,6 @@ class Autoencoder_CAEv2(nn.Module):
             nn.Upsample(scale_factor=2, mode='nearest'),
             
             nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(), 
             nn.Sigmoid()
         )
 

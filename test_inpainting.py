@@ -17,6 +17,8 @@ print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)
 def test(_=None):
+    #PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
+    #net = Autoencoder_CAE()
     PATH = 'v2Inpainting_CAEimgnet.pth'
     net = Autoencoder_CAEv2()
     try:
