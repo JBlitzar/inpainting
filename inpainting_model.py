@@ -41,4 +41,5 @@ class Autoencoder_CAE(nn.Module):
         # Define forward pass
         x = self.encoder(x)
         x = self.decoder(x)
+        x = x * 255
         return x

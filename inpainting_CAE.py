@@ -23,7 +23,6 @@ def unpickle(file):
     return dict
 
 data = unpickle("imgnet_train.pickle")
-data = data / 255
 print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)
