@@ -24,7 +24,7 @@ step 2: convolutional autoencoder ✔️ (imagenet)
 
 reccommended convolutional layers getting smaller, flatten at bottom, conv getting bigger (make sure architecture is symmetric)
 
-
+![image](structure.png)
 
 All conv layers, dont flatten (still works, harder-to-work-with bottleneck)
 
