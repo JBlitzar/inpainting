@@ -16,19 +16,19 @@ data = unpickle("imgnet_test.pickle")
 print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)
+#PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
+#net = Autoencoder_CAE()
+PATH = 'v2Inpainting_CAEimgnet.pth'
+net = Autoencoder_CAEv2()
+try:
+    net.load_state_dict(torch.load(PATH))
+    print(net.state_dict)
+    print(f"Loaded from: {PATH}")
+except Exception as e:
+    print(e)
+    print("Cancelled model loading")
+    exit()
 def test(_=None):
-    #PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
-    #net = Autoencoder_CAE()
-    PATH = 'v2Inpainting_CAEimgnet.pth'
-    net = Autoencoder_CAEv2()
-    try:
-        net.load_state_dict(torch.load(PATH))
-        print(net.state_dict)
-        print(f"Loaded from: {PATH}")
-    except Exception as e:
-        print(e)
-        print("Cancelled model loading")
-        exit()
     item = data[random.randint(0,len(data)-1)]
     input_ = np.array([item])
     input_ = torch.Tensor(input_)

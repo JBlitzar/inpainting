@@ -1,5 +1,7 @@
 # inpainting
 
+IMAGENET128: https://www.kaggle.com/datasets/akash2sharma/tiny-imagenet/data
+
 TINY IMAGENET http://cs231n.stanford.edu/tiny-imagenet-200.zip
 
 https://shotdeck.com/
