@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle
+from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2
 import pickle
 import numpy as np
 import random
@@ -17,8 +17,8 @@ print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)
 def test(_=None):
-    PATH = 'Inpainting_CAEimgnet.pth'
-    net = Autoencoder_CAE()
+    PATH = 'v2Inpainting_CAEimgnet.pth'
+    net = Autoencoder_CAEv2()
     try:
         net.load_state_dict(torch.load(PATH))
         print(net.state_dict)

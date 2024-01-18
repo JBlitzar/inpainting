@@ -65,7 +65,7 @@ for epoch in tqdm.trange(num_epochs):
         outputs = model(inputs)
         loss = criterion(outputs, data) # changed from  criterion(outputs, inputs)  because we want reconstructed to equal output
         current_loss = loss
-        pbar.set_description(f"Loss: {current_loss}")
+        pbar.set_description(f"Loss: {round(current_loss.item()*100)/100}")
         loss.backward()
         optimizer.step()
         if idx % 10 == 0:
