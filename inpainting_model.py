@@ -5,10 +5,10 @@ def black_out_random_rectangle(tensor):
 
     for i in range(batch_size):
         # Randomly select the position and size of the rectangle
-        top = torch.randint(0, height - 10, (1,)).item()
-        left = torch.randint(0, width - 10, (1,)).item()
-        rect_height = torch.randint(1, 10, (1,)).item()
-        rect_width = torch.randint(1, 10, (1,)).item()
+        top = torch.randint(0, height-2, (1,)).item()
+        left = torch.randint(0, width-2, (1,)).item()
+        rect_height = torch.randint(1, (height-top), (1,)).item()
+        rect_width = torch.randint(1, (width-left), (1,)).item()
 
         # Black out the selected rectangle in all channels for the current image
         tensor[i, :, top:top+rect_height, left:left+rect_width] = 0

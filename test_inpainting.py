@@ -29,14 +29,16 @@ input_ = torch.Tensor(input_)
 black_out_random_rectangle(input_)
 result = net(input_)
 result = result.detach().numpy()
-result = result[0]
+result = result[0].astype(int)
 print(result.shape)
-print(item.shape)
-print(item)
+input_ = input_.numpy()[0].astype(int)
+
+print(input_.shape)
+
 fig, axs = plt.subplots(1, 2)
 
 # Display the first image in the first subplot
-axs[0].imshow(item.transpose(1, 2, 0))  # Transpose to (64, 64, 3) for RGB format
+axs[0].imshow(input_.transpose(1, 2, 0))  # Transpose to (64, 64, 3) for RGB format
 axs[0].axis('off')  # Turn off axis labels
 
 # Display the second image in the second subplot
