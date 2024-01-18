@@ -17,7 +17,7 @@ print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)
 def test(_=None):
-    PATH = 'Inpainting_CAEimgnet.pth'
+    PATH = 'BACKUP_Inpainting_CAEimgnet.pth'
     net = Autoencoder_CAE()
     try:
         net.load_state_dict(torch.load(PATH))
