@@ -1,0 +1,45 @@
+import torch.nn as nn
+import torch
+def black_out_random_rectangle(tensor):
+    batch_size, num_channels, height, width = list(tensor.shape)
+
+    for i in range(batch_size):
+        # Randomly select the position and size of the rectangle
+        top = torch.randint(0, height - 10, (1,)).item()
+        left = torch.randint(0, width - 10, (1,)).item()
+        rect_height = torch.randint(1, 10, (1,)).item()
+        rect_width = torch.randint(1, 10, (1,)).item()
+
+        # Black out the selected rectangle in all channels for the current image
+        tensor[i, :, top:top+rect_height, left:left+rect_width] = 0
+
+class Autoencoder_CAE(nn.Module):
+    def __init__(self):
+        super(Autoencoder_CAE, self).__init__()
+
+        # Define encoder layers
+        self.encoder = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
+            nn.ReLU()
+        )
+
+        # Define decoder layers
+        self.decoder = nn.Sequential(
+            nn.Conv2d(256, 128, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(128, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        # Define forward pass
+        x = self.encoder(x)
+        x = self.decoder(x)
+        x = x * 255.0 # Sigmoid is between 0 and 1, this is now between 0 and 255
+        return x
