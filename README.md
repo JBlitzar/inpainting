@@ -23,7 +23,7 @@ step 1: autoencoder ✔️ (mnist)
 step 2: convolutional autoencoder ✔️ (imagenet)
 
 reccommended convolutional layers getting smaller, flatten at bottom, conv getting bigger (make sure architecture is symmetric)
-![image]([files/Users/jzhang/Desktop/Isolated.png](https://www.researchgate.net/publication/334242425/figure/fig3/AS:777158884597761@1562300525316/The-architecture-of-the-CAE-network.png))
+
 
 
 All conv layers, dont flatten (still works, harder-to-work-with bottleneck)
