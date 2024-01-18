@@ -36,16 +36,17 @@ print(dataset.size())
 print("data loaded")
 
 def black_out_random_rectangle(tensor):
-    num_channels, height, width = tensor.shape
+    batch_size, num_channels, height, width = list(tensor.shape)
 
-    # Randomly select the position and size of the rectangle
-    top = torch.randint(0, height - 10, (1,)).item()
-    left = torch.randint(0, width - 10, (1,)).item()
-    rect_height = torch.randint(1, 10, (1,)).item()
-    rect_width = torch.randint(1, 10, (1,)).item()
+    for i in range(batch_size):
+        # Randomly select the position and size of the rectangle
+        top = torch.randint(0, height - 10, (1,)).item()
+        left = torch.randint(0, width - 10, (1,)).item()
+        rect_height = torch.randint(1, 10, (1,)).item()
+        rect_width = torch.randint(1, 10, (1,)).item()
 
-    # Black out the selected rectangle in all channels
-    tensor[:, top:top+rect_height, left:left+rect_width] = 0
+        # Black out the selected rectangle in all channels for the current image
+        tensor[i, :, top:top+rect_height, left:left+rect_width] = 0
 
 class Autoencoder_CAE(nn.Module):
     def __init__(self):
@@ -94,7 +95,7 @@ print("model initialized")
 for epoch in tqdm.trange(num_epochs):
     pbar = tqdm.tqdm(splitted_data)
     current_loss = 0
-    for data in pbar:
+    for idx, data in enumerate(pbar):
         #print(data.shape)
         #inputs = data.view(data.size(0), -1)
         inputs = data
@@ -106,6 +107,8 @@ for epoch in tqdm.trange(num_epochs):
         pbar.set_description(f"Loss: {current_loss}")
         loss.backward()
         optimizer.step()
+        if idx % 10 == 0:
+            torch.save(model.state_dict(), PATH)
 
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
     torch.save(model.state_dict(), PATH)
