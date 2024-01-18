@@ -5,6 +5,7 @@ import pickle
 import numpy as np
 import random
 from matplotlib.widgets import Button
+import time
 
 def unpickle(file):
     with open(file, 'rb') as fo:
@@ -47,8 +48,5 @@ def test(_=None):
 fig, axs = plt.subplots(1, 2)
 
 test()
-
-bnext = Button(axs[0], 'Next',color="yellow")
-bnext.on_clicked(test)
 
 plt.show()
