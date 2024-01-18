@@ -18,15 +18,18 @@ https://paperswithcode.com/dataset/imagenet
 https://github.com/JBlitzar/cnn-experiments
 
 
-step 1: autoencoder (non-image data)
+step 1: autoencoder ✔️ (mnist)
 
-step 2: convolutional autoencoder:
+step 2: convolutional autoencoder ✔️ (imagenet)
 
 reccommended convolutional layers getting smaller, flatten at bottom, conv getting bigger (make sure architecture is symmetric)
 
+https://www.researchgate.net/publication/334242425/figure/fig3/AS:777158884597761@1562300525316/The-architecture-of-the-CAE-network.png
+
 All conv layers, dont flatten (still works, harder-to-work-with bottleneck)
 
-step 3: inpainting
+
+step 3: inpainting 
 
 inpainting (content aware fill) input it to the autoencoder, reconstruct it with those features. Train it so that a box covering an area decodes to a complete image.
 
