@@ -23,27 +23,66 @@ def black_out_random_rectangle_legacy(tensor):
         rect_width = torch.randint(1, width-left, (1,)).item()
         # Black out the selected rectangle in all channels for the current image
         tensor[i, :, top:min(top+rect_height, height), left:min(left+rect_width,width)] = 0
+
 class Autoencoder_CAE(nn.Module):
     def __init__(self):
         super(Autoencoder_CAE, self).__init__()
 
         # Define encoder layers
         self.encoder = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
             nn.ReLU()
         )
 
         # Define decoder layers
         self.decoder = nn.Sequential(
-            nn.Conv2d(256, 128, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(256, 128, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.Conv2d(128, 64, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(128, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.Conv2d(64, 3, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        # Define forward pass
+        x = self.encoder(x)
+        x = self.decoder(x)
+        x = x * 255
+        return x
+class Autoencoder_CAEv2(nn.Module):
+    def __init__(self):
+        super(Autoencoder_CAEv2, self).__init__()
+
+        self.encoder = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            nn.Conv2d(32, 16, kernel_size=3, stride=1, padding=1),
+            nn.ReLU()
+        )
+
+        # Decoder layers
+        self.decoder = nn.Sequential(
+            nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Upsample(scale_factor=2, mode='nearest'),
+            
+            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Upsample(scale_factor=2, mode='nearest'),
+            
+            nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(), 
             nn.Sigmoid()
         )
 

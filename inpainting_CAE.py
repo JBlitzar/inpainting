@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import tqdm
 import pickle
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle
+from inpainting_model import Autoencoder_CAE, black_out_random_rectangle,Autoencoder_CAEv2
 print("imported")
 
 USE_MPS = False
@@ -39,10 +39,11 @@ print("data loaded")
 
 
 # Instantiate model, define loss function, and optimizer
-PATH = 'Inpainting_CAEimgnet.pth'
-model = Autoencoder_CAE()
+PATH = 'v2Inpainting_CAEimgnet.pth'
+model = Autoencoder_CAEv2()
 try:
     model.load_state_dict(torch.load(PATH))
+    print("Model loaded", PATH)
 except Exception as e:
     print(e)
     print("Cancelled model loading")
