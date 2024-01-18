@@ -79,7 +79,13 @@ class Autoencoder_CAE(nn.Module):
 
 
 # Instantiate model, define loss function, and optimizer
+PATH = 'CAEimgnet.pth'
 model = Autoencoder_CAE()
+try:
+    model.load_state_dict(torch.load(PATH))
+except Exception as e:
+    print(e)
+    print("Cancelled model loading")
 model.to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
@@ -94,18 +100,15 @@ for epoch in tqdm.trange(num_epochs):
         inputs = data
         black_out_random_rectangle(inputs)
         optimizer.zero_grad()
-        pbar.set_description(f"Loss: {current_loss} | eval...")
         outputs = model(inputs)
-        pbar.set_description(f"Loss: {current_loss} | loss...")
         loss = criterion(outputs, data) # changed from  criterion(outputs, inputs)  because we want reconstructed to equal output
         current_loss = loss
-        pbar.set_description(f"Loss: {current_loss} | backprop...")
+        pbar.set_description(f"Loss: {current_loss}")
         loss.backward()
-        pbar.set_description(f"Loss: {current_loss} | Done!")
         optimizer.step()
 
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
-    torch.save(model.state_dict(), 'CAEimgenet.pth')
+    torch.save(model.state_dict(), PATH)
 
 # Save the trained model if needed
-torch.save(model.state_dict(), 'CAEimgnet.pth')
+torch.save(model.state_dict(), PATH)
