@@ -6,7 +6,13 @@ from torchvision import datasets, transforms
 import tqdm
 import pickle
 print("imported")
-# Set random seed for reproducibility
+
+USE_MPS = False
+device = "cpu"
+if torch.backends.mps.is_available():
+    print("MPS available")
+    USE_MPS = True
+    device = "mps"
 learning_rate = 0.001
 batch_size = 64
 num_epochs = 10
@@ -16,12 +22,15 @@ def unpickle(file):
     return dict
 
 data = unpickle("imgnet_train.pickle")
-print(data)
+print(data.shape)
+print(data[0].shape)
+print(data[0][0].shape)
 dataset = torch.Tensor(data)
 sections_size = 100
-splitted_data = torch.split(dataset, sections_size)
+splitted_data = tuple([t.to(device) for t in torch.split(dataset, sections_size)])
+print(type(splitted_data[0]))
+
 print("Data loaded.")
-print("Data:", dataset)
 print("Shapes:")
 print(dataset.size())
 print("data loaded")
@@ -60,6 +69,7 @@ class Autoencoder_CAE(nn.Module):
 
 # Instantiate model, define loss function, and optimizer
 model = Autoencoder_CAE()
+model.to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 print("model initialized")
