@@ -41,5 +41,4 @@ class Autoencoder_CAE(nn.Module):
         # Define forward pass
         x = self.encoder(x)
         x = self.decoder(x)
-        x = x * 255.0 # Sigmoid is between 0 and 1, this is now between 0 and 255
         return x
