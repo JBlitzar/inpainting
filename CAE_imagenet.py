@@ -35,7 +35,6 @@ print("Shapes:")
 print(dataset.size())
 print("data loaded")
 
-
 class Autoencoder_CAE(nn.Module):
     def __init__(self):
         super(Autoencoder_CAE, self).__init__()
@@ -57,17 +56,18 @@ class Autoencoder_CAE(nn.Module):
             nn.Conv2d(128, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
-            nn.Sigmoid()  # Use Sigmoid for the output layer if input is normalized between 0 and 1
+            nn.Sigmoid()
         )
 
     def forward(self, x):
         # Define forward pass
         x = self.encoder(x)
         x = self.decoder(x)
+        x = x * 255
         return x
 
-
-PATH = 'CAEimgenet.pth'
+# Instantiate model, define loss function, and optimizer
+PATH = 'Inpainting_CAEimgnet.pth'
 model = Autoencoder_CAE()
 try:
     model.load_state_dict(torch.load(PATH))
@@ -82,17 +82,20 @@ print("model initialized")
 for epoch in tqdm.trange(num_epochs):
     pbar = tqdm.tqdm(splitted_data)
     current_loss = 0
-    for data in pbar:
+    for idx, data in enumerate(pbar):
         #print(data.shape)
         #inputs = data.view(data.size(0), -1)
-        inputs = data
+        inputs =data
+        #print(torch.all(inputs.eq(data)))
         optimizer.zero_grad()
         outputs = model(inputs)
-        loss = criterion(outputs, inputs) 
+        loss = criterion(outputs, inputs) # changed from  criterion(outputs, inputs)  because we want reconstructed to equal output
         current_loss = loss
         pbar.set_description(f"Loss: {current_loss}")
         loss.backward()
         optimizer.step()
+        if idx % 10 == 0:
+            torch.save(model.state_dict(), PATH)
 
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
     torch.save(model.state_dict(), PATH)

@@ -57,8 +57,9 @@ for epoch in tqdm.trange(num_epochs):
     for idx, data in enumerate(pbar):
         #print(data.shape)
         #inputs = data.view(data.size(0), -1)
-        inputs = data
+        inputs = data.detach().clone()
         black_out_random_rectangle(inputs)
+        #print(torch.all(inputs.eq(data)))
         optimizer.zero_grad()
         outputs = model(inputs)
         loss = criterion(outputs, data) # changed from  criterion(outputs, inputs)  because we want reconstructed to equal output
