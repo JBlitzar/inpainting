@@ -45,9 +45,12 @@ def test(_=None):
     # Display the second image in the second subplot
     axs[1].imshow(result.transpose(1, 2, 0))
     axs[1].axis('off')
+    plt.draw()
 
 fig, axs = plt.subplots(1, 2)
-
+buttonax = fig.add_axes([0.7, 0.05, 0.1, 0.075])
+btest = Button(buttonax, 'Test')
+btest.on_clicked(test)
 test()
 
 plt.show()
