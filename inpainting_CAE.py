@@ -79,7 +79,7 @@ class Autoencoder_CAE(nn.Module):
 
 
 # Instantiate model, define loss function, and optimizer
-PATH = 'CAEimgnet.pth'
+PATH = 'Inpainting_CAEimgnet.pth'
 model = Autoencoder_CAE()
 try:
     model.load_state_dict(torch.load(PATH))
