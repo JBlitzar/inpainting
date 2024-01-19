@@ -58,7 +58,7 @@ for epoch in tqdm.trange(num_epochs):
     for idx, data in enumerate(pbar):
         #print(data.shape)
         #inputs = data.view(data.size(0), -1)
-        inputs = data.detach().clone()
+        inputs = data.detach().clone() # deepcopy
         black_out_random_rectangle(inputs)
         #print(torch.all(inputs.eq(data)))
         optimizer.zero_grad()
@@ -68,7 +68,7 @@ for epoch in tqdm.trange(num_epochs):
         pbar.set_description(f"Loss: {round(current_loss.item()*100)/100}")
         loss.backward()
         optimizer.step()
-        if idx % 10 == 0:
+        if idx % 50 == 0:
             torch.save(model.state_dict(), PATH)
 
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
