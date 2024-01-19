@@ -39,8 +39,8 @@ print("data loaded")
 
 
 # Instantiate model, define loss function, and optimizer
-PATH = 'v3Inpainting_CAEimgnet.pth'
-model = Autoencoder_CAEv3()
+PATH = 'v2Inpainting_CAEimgnet.pth'
+model = Autoencoder_CAEv2()
 try:
     model.load_state_dict(torch.load(PATH))
     print("Model loaded", PATH)
