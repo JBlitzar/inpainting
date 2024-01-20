@@ -7,6 +7,8 @@ import tqdm
 import pickle
 import numpy as np
 from inpainting_model import Autoencoder_CAE, black_out_random_rectangle,Autoencoder_CAEv2, Autoencoder_CAEv3
+import os
+from datetime import datetime
 print("imported")
 
 USE_MPS = False
@@ -15,7 +17,7 @@ if torch.backends.mps.is_available():
     print("MPS available")
     USE_MPS = True
     device = "mps"
-learning_rate = 0.005
+learning_rate = 0.001
 batch_size = 64
 num_epochs = 20
 print("Hyperparameters: ")
@@ -78,3 +80,6 @@ for epoch in tqdm.trange(num_epochs):
 
 # Save the trained model if needed
 torch.save(model.state_dict(), PATH)
+os.system("say 'All done'")
+currenttime = datetime.now().strftime("%H:%M:%S")
+os.system(f"osascript -e 'display alert \"Finished training at {currenttime} \"'")

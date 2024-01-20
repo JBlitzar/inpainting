@@ -7,20 +7,21 @@ import random
 from matplotlib.widgets import Button
 import time
 import torch.nn as nn
-
+import tqdm
 def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo, encoding='bytes')
     return dict
 criterion = nn.MSELoss()
-data = unpickle("imgnet_train.pickle")
+data = unpickle("imgnet_test.pickle")
 print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)
 #PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
 #net = Autoencoder_CAE()
-#PATH = 'inpaintingv2/BACKUP2_v2Inpainting_CAEimgnet.pth'
-#net = Autoencoder_CAEv2()
+# PATH = 'inpaintingv2/BACKUP2_v2Inpainting_CAEimgnet.pth'
+# PATH = "v2Inpainting_CAEimgnet.pth"
+net = Autoencoder_CAEv2()
 net = None
 def reload_model(_=None):
     global net
@@ -30,18 +31,33 @@ def reload_model(_=None):
         net.load_state_dict(torch.load(PATH))
         print(net.state_dict)
         print(f"Loaded from: {PATH}")
+        plt.text(1,1.5, f"Loaded from: {PATH}")
+        plt.draw()
     except Exception as e:
         print(e)
         print("Cancelled model loading")
         exit()
 reload_model()
+def get_avg_loss(_=None):
+    losses = []
+    for item in tqdm.tqdm(data):
+        #item = data[random.randint(0,len(data)-1)]
+        input_ = np.array([item])
+        input_ = torch.Tensor(input_)
+        black_out_random_rectangle(input_)
+        result = net(input_)
+        loss = criterion(result, torch.Tensor(np.array([item])))
+        losses.append(loss.item())
+    avg_loss = sum(losses)/len(data)
+    print("Loss:", avg_loss)
+    plt.text(0.5,2, f"Loss: {avg_loss}")
 def test(_=None):
     item = data[random.randint(0,len(data)-1)]
     input_ = np.array([item])
     input_ = torch.Tensor(input_)
     black_out_random_rectangle(input_)
     result = net(input_)
-    loss = criterion(result, torch.Tensor(item))
+    loss = criterion(result, torch.Tensor(np.array([item])))
     result = result.detach().numpy()
     result = result[0].astype(int)
     print(result.shape)
@@ -66,6 +82,10 @@ test()
 rbutonax = fig.add_axes([0.5, 0.05, 0.1, 0.075])
 breset = Button(rbutonax, 'Reload')
 breset.on_clicked(reload_model)
+
+lbutonax = fig.add_axes([0.3, 0.05, 0.1, 0.075])
+bloss = Button(lbutonax, 'Loss')
+bloss.on_clicked(get_avg_loss)
 
 
 plt.show()
