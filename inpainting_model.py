@@ -94,10 +94,7 @@ class Autoencoder_CAEv2(nn.Module):
 class Autoencoder_CAEv3(nn.Module):
     def __init__(self):
         super(Autoencoder_CAEv3, self).__init__()
-        encoding_size = 1024
         reduced_width = 16
-        reduced_size = reduced_width * reduced_width
-
         # Encoder layers
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
