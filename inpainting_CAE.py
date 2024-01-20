@@ -16,7 +16,7 @@ if torch.backends.mps.is_available():
     device = "mps"
 learning_rate = 0.001
 batch_size = 64
-num_epochs = 10
+num_epochs = 20
 def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo, encoding='bytes')
@@ -39,8 +39,8 @@ print("data loaded")
 
 
 # Instantiate model, define loss function, and optimizer
-PATH = 'v2Inpainting_CAEimgnet.pth'
-model = Autoencoder_CAEv2()
+PATH = 'v3Inpainting_CAEimgnet.pth'
+model = Autoencoder_CAEv3()
 try:
     model.load_state_dict(torch.load(PATH))
     print("Model loaded", PATH)
