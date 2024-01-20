@@ -28,10 +28,11 @@ def reload_model(_=None):
     PATH = 'v3Inpainting_CAEimgnet.pth'
     net = Autoencoder_CAEv3()
     #PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
+    # PATH = "Inpainting_CAEimgnet.pth"
     #net = Autoencoder_CAE()
     # PATH = 'inpaintingv2/BACKUP2_v2Inpainting_CAEimgnet.pth'
-    PATH = "v2Inpainting_CAEimgnet.pth"
-    net = Autoencoder_CAEv2()
+    # PATH = "v2Inpainting_CAEimgnet.pth"
+    # net = Autoencoder_CAEv2()
     
     try:
         net.load_state_dict(torch.load(PATH))
