@@ -13,7 +13,7 @@ def unpickle(file):
         dict = pickle.load(fo, encoding='bytes')
     return dict
 criterion = nn.MSELoss()
-data = unpickle("imgnet_test.pickle")
+data = unpickle("imgnet_train.pickle")
 print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)

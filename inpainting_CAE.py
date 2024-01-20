@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import tqdm
 import pickle
+import numpy as np
 from inpainting_model import Autoencoder_CAE, black_out_random_rectangle,Autoencoder_CAEv2, Autoencoder_CAEv3
 print("imported")
 
@@ -14,27 +15,28 @@ if torch.backends.mps.is_available():
     print("MPS available")
     USE_MPS = True
     device = "mps"
-learning_rate = 0.001
+learning_rate = 0.005
 batch_size = 64
 num_epochs = 20
+print("Hyperparameters: ")
+print(learning_rate, batch_size, num_epochs)
 def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo, encoding='bytes')
     return dict
 
 data = unpickle("imgnet_train.pickle")
-print(data.shape)
-print(data[0].shape)
-print(data[0][0].shape)
+np.random.shuffle(data)
+# print(data.shape)
+# print(data[0].shape)
+# print(data[0][0].shape)
 dataset = torch.Tensor(data)
 sections_size = 100
 splitted_data = tuple([t.to(device) for t in torch.split(dataset, sections_size)])
-print(type(splitted_data[0]))
 
 print("Data loaded.")
 print("Shapes:")
 print(dataset.size())
-print("data loaded")
 
 
 
