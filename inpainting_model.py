@@ -94,7 +94,11 @@ class Autoencoder_CAEv2(nn.Module):
 class Autoencoder_CAEv3(nn.Module):
     def __init__(self):
         super(Autoencoder_CAEv3, self).__init__()
+        encoding_size = 1024
+        reduced_width = 16
+        reduced_size = reduced_width * reduced_width
 
+        # Encoder layers
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
@@ -105,14 +109,18 @@ class Autoencoder_CAEv3(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
             
             nn.Conv2d(32, 16, kernel_size=3, stride=1, padding=1),
-            nn.ReLU()
+            nn.ReLU(),
+            nn.Flatten()  # Flatten layer
         )
 
         # Decoder layers
         self.decoder = nn.Sequential(
+
+            nn.Unflatten(dim=1, unflattened_size=(16, reduced_width, reduced_width)),  # Reshape layer
+            
             nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.Upsample(scale_factor=2, mode='nearest'), # bilinear, nearest
+            nn.Upsample(scale_factor=2, mode='nearest'),  # Bilinear or nearest
             
             nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
@@ -123,6 +131,7 @@ class Autoencoder_CAEv3(nn.Module):
         )
 
     def forward(self, x):
+        x = x / 255
         # Define forward pass
         x = self.encoder(x)
         x = self.decoder(x)
