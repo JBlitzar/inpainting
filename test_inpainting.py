@@ -21,23 +21,30 @@ print(data[0][0].shape)
 #net = Autoencoder_CAE()
 # PATH = 'inpaintingv2/BACKUP2_v2Inpainting_CAEimgnet.pth'
 # PATH = "v2Inpainting_CAEimgnet.pth"
-net = Autoencoder_CAEv2()
+# net = Autoencoder_CAEv2()
 net = None
 def reload_model(_=None):
     global net
     PATH = 'v3Inpainting_CAEimgnet.pth'
     net = Autoencoder_CAEv3()
+    #PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
+    #net = Autoencoder_CAE()
+    # PATH = 'inpaintingv2/BACKUP2_v2Inpainting_CAEimgnet.pth'
+    PATH = "v2Inpainting_CAEimgnet.pth"
+    net = Autoencoder_CAEv2()
+    
     try:
         net.load_state_dict(torch.load(PATH))
         print(net.state_dict)
         print(f"Loaded from: {PATH}")
-        plt.text(1,1.5, f"Loaded from: {PATH}")
-        plt.draw()
+        if _ != 1:
+            plt.text(1,1.5, f"Loaded from: {PATH}")
+            plt.draw()
     except Exception as e:
         print(e)
         print("Cancelled model loading")
         exit()
-reload_model()
+reload_model(_=1)
 def get_avg_loss(_=None):
     losses = []
     for item in tqdm.tqdm(data):
