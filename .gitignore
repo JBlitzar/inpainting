@@ -3,6 +3,7 @@ data/
 tiny-imagenet-200/
 tiny-imagenet-200.zip
 imgnet*.pickle
+celeba_hq_256/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

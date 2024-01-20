@@ -2,6 +2,8 @@
 
 https://www.kaggle.com/datasets/jessicali9530/celeba-dataset
 
+https://www.kaggle.com/datasets/badasstechie/celebahq-resized-256x256
+
 IMAGENET128: https://www.kaggle.com/datasets/akash2sharma/tiny-imagenet/data
 
 TINY IMAGENET http://cs231n.stanford.edu/tiny-imagenet-200.zip
