@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore")
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -9,6 +11,7 @@ import numpy as np
 from inpainting_model import Autoencoder_CAE, black_out_random_rectangle,Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE
 import os
 from datetime import datetime
+warnings.filterwarnings("default")
 print("imported")
 
 USE_MPS = False
@@ -83,4 +86,5 @@ torch.save(model.state_dict(), PATH)
 print("Done")
 os.system("say 'All done'")
 currenttime = datetime.now().strftime("%I:%M:%S %p")
+print(f"Finished at {currenttime}")
 os.system(f"osascript -e 'display alert \"Finished training at {currenttime} \"' &")
