@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE
+from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, black_out_random_rectangle_centered
 import pickle
 import numpy as np
 import random
@@ -17,6 +17,8 @@ data = unpickle("celeba.pickle")
 print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)
+rectangle_fn = black_out_random_rectangle_centered
+print(rectangle_fn)
 #PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
 #net = Autoencoder_CAE()
 # PATH = 'inpaintingv2/BACKUP2_v2Inpainting_CAEimgnet.pth'
@@ -38,7 +40,6 @@ def reload_model(_=None):
     
     try:
         net.load_state_dict(torch.load(PATH))
-        print(net.state_dict)
         print(f"Loaded from: {PATH}")
         if _ != 1:
             plt.text(1,1.5, f"Loaded from: {PATH}")
@@ -54,7 +55,7 @@ def get_avg_loss(_=None):
         #item = data[random.randint(0,len(data)-1)]
         input_ = np.array([item])
         input_ = torch.Tensor(input_)
-        black_out_random_rectangle(input_)
+        rectangle_fn(input_)
         result = net(input_)
         loss = criterion(result, torch.Tensor(np.array([item])))
         losses.append(loss.item())
@@ -65,7 +66,7 @@ def test(_=None):
     item = data[random.randint(0,len(data)-1)]
     input_ = np.array([item])
     input_ = torch.Tensor(input_)
-    black_out_random_rectangle(input_)
+    rectangle_fn(input_)
     result = net(input_)
     loss = criterion(result, torch.Tensor(np.array([item])))
     result = result.detach().numpy()

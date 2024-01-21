@@ -8,7 +8,7 @@ from torchvision import datasets, transforms
 import tqdm
 import pickle
 import numpy as np
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle,Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE
+from inpainting_model import Autoencoder_CAE, black_out_random_rectangle,Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, black_out_random_rectangle_centered
 import os
 from datetime import datetime
 warnings.filterwarnings("default")
@@ -23,8 +23,9 @@ if torch.backends.mps.is_available():
 learning_rate = 0.001
 batch_size = 64
 num_epochs = 40
+rectangle_fn = black_out_random_rectangle_centered
 print("Hyperparameters: ")
-print(learning_rate, batch_size, num_epochs)
+print(learning_rate, batch_size, num_epochs, rectangle_fn)
 def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo, encoding='bytes')
@@ -66,7 +67,7 @@ for epoch in tqdm.trange(num_epochs):
         #print(data.shape)
         #inputs = data.view(data.size(0), -1)
         inputs = data.detach().clone() # deepcopy
-        black_out_random_rectangle(inputs)
+        rectangle_fn(inputs)
         #print(torch.all(inputs.eq(data)))
         optimizer.zero_grad()
         outputs = model(inputs)

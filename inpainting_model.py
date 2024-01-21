@@ -1,5 +1,18 @@
 import torch.nn as nn
 import torch
+
+def black_out_random_rectangle_centered(tensor):
+    batch_size, num_channels, height, width = list(tensor.shape)
+
+    for i in range(batch_size):
+        # Randomly select the position and size of the rectangle
+        top = torch.randint(0, int(height/2)-2, (1,)).item()
+        left = torch.randint(0, int(width/2)-2, (1,)).item()
+        rect_height = torch.randint(20, int(height/2), (1,)).item()
+        rect_width = torch.randint(20, int(width/2), (1,)).item()
+        # Black out the selected rectangle in all channels for the current image
+        tensor[i, :, top:min(top+rect_height, height), left:min(left+rect_width,width)] = 0
+
 def black_out_random_rectangle(tensor):
     batch_size, num_channels, height, width = list(tensor.shape)
 
