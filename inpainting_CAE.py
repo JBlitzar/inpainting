@@ -19,7 +19,7 @@ if torch.backends.mps.is_available():
     device = "mps"
 learning_rate = 0.001
 batch_size = 64
-num_epochs = 20
+num_epochs = 40
 print("Hyperparameters: ")
 print(learning_rate, batch_size, num_epochs)
 def unpickle(file):
