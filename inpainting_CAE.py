@@ -81,5 +81,5 @@ for epoch in tqdm.trange(num_epochs):
 # Save the trained model if needed
 torch.save(model.state_dict(), PATH)
 os.system("say 'All done'")
-currenttime = datetime.now().strftime("%H:%M:%S")
-os.system(f"osascript -e 'display alert \"Finished training at {currenttime} \"'")
+currenttime = datetime.now().strftime("%I:%M:%S %p")
+os.system(f"osascript -e 'display alert \"Finished training at {currenttime} \"' &")
