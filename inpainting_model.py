@@ -152,14 +152,12 @@ class CelebACAE(nn.Module):
             
             nn.Conv2d(32, 16, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Flatten()  # Flatten layer
+            nn.MaxPool2d(kernel_size=2, stride=2)
         )
 
         # Decoder layers
         self.decoder = nn.Sequential(
 
-            nn.Unflatten(dim=1, unflattened_size=(16, reduced_width, reduced_width)),  # Reshape layer
             
             nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),

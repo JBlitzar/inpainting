@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3
+from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE
 import pickle
 import numpy as np
 import random
@@ -13,7 +13,7 @@ def unpickle(file):
         dict = pickle.load(fo, encoding='bytes')
     return dict
 criterion = nn.MSELoss()
-data = unpickle("imgnet_test.pickle")
+data = unpickle("celeba.pickle")
 print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)
@@ -25,8 +25,10 @@ print(data[0][0].shape)
 net = None
 def reload_model(_=None):
     global net
-    PATH = 'v3Inpainting_CAEimgnet.pth'
-    net = Autoencoder_CAEv3()
+    PATH = 'celebaCAE.pth'
+    net = CelebACAE()
+    # PATH = 'v3Inpainting_CAEimgnet.pth'
+    # net = Autoencoder_CAEv3()
     #PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
     # PATH = "Inpainting_CAEimgnet.pth"
     #net = Autoencoder_CAE()

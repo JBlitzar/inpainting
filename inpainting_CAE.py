@@ -6,7 +6,7 @@ from torchvision import datasets, transforms
 import tqdm
 import pickle
 import numpy as np
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle,Autoencoder_CAEv2, Autoencoder_CAEv3
+from inpainting_model import Autoencoder_CAE, black_out_random_rectangle,Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE
 import os
 from datetime import datetime
 print("imported")
@@ -27,13 +27,13 @@ def unpickle(file):
         dict = pickle.load(fo, encoding='bytes')
     return dict
 
-data = unpickle("imgnet_train.pickle")
+data = unpickle("celeba.pickle")
 np.random.shuffle(data)
 # print(data.shape)
 # print(data[0].shape)
 # print(data[0][0].shape)
 dataset = torch.Tensor(data)
-sections_size = 100
+sections_size = batch_size
 splitted_data = tuple([t.to(device) for t in torch.split(dataset, sections_size)])
 
 print("Data loaded.")
@@ -43,8 +43,8 @@ print(dataset.size())
 
 
 # Instantiate model, define loss function, and optimizer
-PATH = 'v3Inpainting_CAEimgnet.pth'
-model = Autoencoder_CAEv3()
+PATH = 'celebaCAE.pth'
+model = CelebACAE()
 try:
     model.load_state_dict(torch.load(PATH))
     print("Model loaded", PATH)
