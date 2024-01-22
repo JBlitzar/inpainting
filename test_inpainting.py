@@ -71,15 +71,15 @@ def test(_=None):
     loss = criterion(result, torch.Tensor(np.array([item])))
     result = result.detach().numpy()
     result = result[0].astype(int)
-    print(result.shape)
+    #print(result.shape)
     input_ = input_.numpy()[0].astype(int)
     
 
-    print(input_.shape)
+    #print(input_.shape)
     # Display the first image in the first subplot
     axs[0].imshow(input_.transpose(1, 2, 0))  # Transpose to (64, 64, 3) for RGB format
     axs[0].axis('off')  # Turn off axis labels
-    print(loss)
+    print(loss.item())
     # Display the second image in the second subplot
     axs[1].imshow(result.transpose(1, 2, 0))
     axs[1].axis('off')
