@@ -11,6 +11,8 @@ import numpy as np
 from inpainting_model import Autoencoder_CAE, black_out_random_rectangle,Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, black_out_random_rectangle_centered
 import os
 from datetime import datetime
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
 warnings.filterwarnings("default")
 print("imported")
 
@@ -22,7 +24,7 @@ if torch.backends.mps.is_available():
     device = "mps"
 learning_rate = 0.001
 batch_size = 64
-num_epochs = 40
+num_epochs = 128
 rectangle_fn = black_out_random_rectangle_centered
 print("Hyperparameters: ")
 print(learning_rate, batch_size, num_epochs, rectangle_fn)
@@ -63,7 +65,10 @@ print("model initialized")
 for epoch in tqdm.trange(num_epochs):
     pbar = tqdm.tqdm(splitted_data)
     current_loss = 0
+    running_sum = 0
+    i = 0
     for idx, data in enumerate(pbar):
+        i = idx
         #print(data.shape)
         #inputs = data.view(data.size(0), -1)
         inputs = data.detach().clone() # deepcopy
@@ -73,17 +78,19 @@ for epoch in tqdm.trange(num_epochs):
         outputs = model(inputs)
         loss = criterion(outputs, data) # changed from  criterion(outputs, inputs)  because we want reconstructed to equal output
         current_loss = loss
+        running_sum += loss.item()
         pbar.set_description(f"Loss: {round(current_loss.item()*100)/100}")
         loss.backward()
         optimizer.step()
         if idx % 50 == 0:
             torch.save(model.state_dict(), PATH)
-
+    writer.add_scalar("Loss/train", running_sum/(i+1), epoch)
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
     torch.save(model.state_dict(), PATH)
 
 # Save the trained model if needed
 torch.save(model.state_dict(), PATH)
+writer.flush()
 print("Done")
 os.system("say 'All done'")
 currenttime = datetime.now().strftime("%I:%M:%S %p")
