@@ -27,9 +27,11 @@ print(rectangle_fn)
 net = None
 def reload_model(_=None):
     global net
-    PATH = 'celebaCAE.pth'#celeba/BACKUP_4celebaCAE.pth' # v1
+    PATH = 'celebaCAE.pth'# # v1
     net = CelebACAE()
     model_saving_format = "v2" #v1 for loading up just the model, not the optimizer and stuff
+    # PATH = 'celeba/BACKUP_4celebaCAE.pth'
+    # model_saving_format = "v1"
     try:
         if model_saving_format == "v2":
             checkpoint = torch.load(PATH)
