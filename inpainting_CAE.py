@@ -74,7 +74,7 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 print("model initialized")
 # Training loop
 for epoch in tqdm.trange(num_epochs):
-    pbar = tqdm.tqdm(splitted_data)
+    pbar = tqdm.tqdm(splitted_data, leave=False)
     current_loss = 0
     running_sum = 0
     i = 0
