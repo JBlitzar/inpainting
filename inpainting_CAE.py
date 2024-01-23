@@ -15,14 +15,14 @@ from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
 warnings.filterwarnings("default")
 print("imported")
-
+np.random.seed()
 USE_MPS = False
 device = "cpu"
 if torch.backends.mps.is_available():
     print("MPS available")
     USE_MPS = True
     device = "mps"
-learning_rate = 0.001
+learning_rate = 0.005
 batch_size = 64
 num_epochs = 128
 rectangle_fn = black_out_random_rectangle_centered
@@ -51,12 +51,23 @@ print(dataset.size())
 # Instantiate model, define loss function, and optimizer
 PATH = 'celebaCAE.pth'
 model = CelebACAE()
+model_loading_format = "v2" #v1 for loading up just the model, not the optimizer and stuff
+model_saving_format = "v2"
+print(model_loading_format, model_saving_format)
 try:
-    model.load_state_dict(torch.load(PATH))
+    if model_loading_format == "v2":
+        checkpoint = torch.load(PATH)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        epoch = checkpoint['epoch']
+        loss = checkpoint['loss']
+    else:
+        model.load_state_dict(torch.load(PATH))
     print("Model loaded", PATH)
 except Exception as e:
     print(e)
     print("Cancelled model loading")
+model.train()
 model.to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
@@ -83,13 +94,41 @@ for epoch in tqdm.trange(num_epochs):
         loss.backward()
         optimizer.step()
         if idx % 50 == 0:
-            torch.save(model.state_dict(), PATH)
+            if model_saving_format == "v2":
+                torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': loss,
+                }, PATH)
+            else:
+                torch.save(model.state_dict(), PATH)
     writer.add_scalar("Loss/train", running_sum/(i+1), epoch)
+    print("=======================================================")
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
-    torch.save(model.state_dict(), PATH)
+    print("=======================================================")
+    if model_saving_format == "v2":
+    
+        torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': loss,
+        }, PATH)
+    else:
+        torch.save(model.state_dict(), PATH)
 
 # Save the trained model if needed
-torch.save(model.state_dict(), PATH)
+#torch.save(model.state_dict(), PATH)
+if model_saving_format == "v2":
+    torch.save({
+    'epoch': epoch,
+    'model_state_dict': model.state_dict(),
+    'optimizer_state_dict': optimizer.state_dict(),
+    'loss': loss,
+    }, PATH)
+else:
+    torch.save(model.state_dict(), PATH)
 writer.flush()
 print("Done")
 os.system("say 'All done'")

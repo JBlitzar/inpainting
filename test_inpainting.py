@@ -27,8 +27,21 @@ print(rectangle_fn)
 net = None
 def reload_model(_=None):
     global net
-    PATH = 'celebaCAE.pth'
+    PATH = 'celebaCAE.pth'#celeba/BACKUP_4celebaCAE.pth' # v1
     net = CelebACAE()
+    model_saving_format = "v2" #v1 for loading up just the model, not the optimizer and stuff
+    try:
+        if model_saving_format == "v2":
+            checkpoint = torch.load(PATH)
+            print(type(checkpoint))
+            print(checkpoint.keys())
+            net.load_state_dict(checkpoint['model_state_dict'])
+        else:
+            net.load_state_dict(torch.load(PATH))
+        print("Model loaded", PATH)
+    except Exception as e:
+        print(e)
+        print("Cancelled model loading")
     # PATH = 'v3Inpainting_CAEimgnet.pth'
     # net = Autoencoder_CAEv3()
     #PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
@@ -37,53 +50,45 @@ def reload_model(_=None):
     # PATH = 'inpaintingv2/BACKUP2_v2Inpainting_CAEimgnet.pth'
     # PATH = "v2Inpainting_CAEimgnet.pth"
     # net = Autoencoder_CAEv2()
-    
-    try:
-        net.load_state_dict(torch.load(PATH))
-        print(f"Loaded from: {PATH}")
-        if _ != 1:
-            plt.text(1,1.5, f"Loaded from: {PATH}")
-            plt.draw()
-    except Exception as e:
-        print(e)
-        print("Cancelled model loading")
-        exit()
+    net.eval()
 reload_model(_=1)
 def get_avg_loss(_=None):
-    losses = []
-    for item in tqdm.tqdm(data):
-        #item = data[random.randint(0,len(data)-1)]
+    with torch.no_grad():
+        losses = []
+        for item in tqdm.tqdm(data):
+            #item = data[random.randint(0,len(data)-1)]
+            input_ = np.array([item])
+            input_ = torch.Tensor(input_)
+            rectangle_fn(input_)
+            result = net(input_)
+            loss = criterion(result, torch.Tensor(np.array([item])))
+            losses.append(loss.item())
+        avg_loss = sum(losses)/len(data)
+        print("Loss:", avg_loss)
+        plt.text(0.5,2, f"Loss: {avg_loss}")
+def test(_=None):
+    with torch.no_grad():
+        item = data[random.randint(0,len(data)-1)]
         input_ = np.array([item])
         input_ = torch.Tensor(input_)
         rectangle_fn(input_)
         result = net(input_)
         loss = criterion(result, torch.Tensor(np.array([item])))
-        losses.append(loss.item())
-    avg_loss = sum(losses)/len(data)
-    print("Loss:", avg_loss)
-    plt.text(0.5,2, f"Loss: {avg_loss}")
-def test(_=None):
-    item = data[random.randint(0,len(data)-1)]
-    input_ = np.array([item])
-    input_ = torch.Tensor(input_)
-    rectangle_fn(input_)
-    result = net(input_)
-    loss = criterion(result, torch.Tensor(np.array([item])))
-    result = result.detach().numpy()
-    result = result[0].astype(int)
-    #print(result.shape)
-    input_ = input_.numpy()[0].astype(int)
-    
+        result = result.detach().numpy()
+        result = result[0].astype(int)
+        #print(result.shape)
+        input_ = input_.numpy()[0].astype(int)
+        
 
-    #print(input_.shape)
-    # Display the first image in the first subplot
-    axs[0].imshow(input_.transpose(1, 2, 0))  # Transpose to (64, 64, 3) for RGB format
-    axs[0].axis('off')  # Turn off axis labels
-    print(loss.item())
-    # Display the second image in the second subplot
-    axs[1].imshow(result.transpose(1, 2, 0))
-    axs[1].axis('off')
-    plt.draw()
+        #print(input_.shape)
+        # Display the first image in the first subplot
+        axs[0].imshow(input_.transpose(1, 2, 0))  # Transpose to (64, 64, 3) for RGB format
+        axs[0].axis('off')  # Turn off axis labels
+        print(loss.item())
+        # Display the second image in the second subplot
+        axs[1].imshow(result.transpose(1, 2, 0))
+        axs[1].axis('off')
+        plt.draw()
 
 fig, axs = plt.subplots(1, 2)
 buttonax = fig.add_axes([0.7, 0.05, 0.1, 0.075])
