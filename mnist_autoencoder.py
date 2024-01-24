@@ -40,7 +40,7 @@ class Autoencoder_v1(nn.Module):
             nn.Linear(encoding_size, hidden_size),
             nn.ReLU(),
             nn.Linear(hidden_size, input_size),
-            nn.Sigmoid()  # Use Sigmoid for the output layer if input is normalized between 0 and 1
+            nn.tanh()
         )
 
     def forward(self, x):
@@ -55,6 +55,12 @@ model = Autoencoder_v1()
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 print("model initialized")
+
+
+def noop():
+    pass
+
+
 # Training loop
 for epoch in tqdm.trange(num_epochs):
     for data, _ in tqdm.tqdm(data_loader):
@@ -65,7 +71,7 @@ for epoch in tqdm.trange(num_epochs):
         loss = criterion(outputs, inputs)
         loss.backward()
         optimizer.step()
-
+        noop()
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
     torch.save(model.state_dict(), 'mnist_autoencoder.pth')
 

@@ -8,10 +8,14 @@ from matplotlib.widgets import Button
 import time
 import torch.nn as nn
 import tqdm
+
+
 def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo, encoding='bytes')
     return dict
+
+
 criterion = nn.MSELoss()
 data = unpickle("celeba.pickle")
 print(data.shape)
@@ -19,19 +23,22 @@ print(data[0].shape)
 print(data[0][0].shape)
 rectangle_fn = black_out_random_rectangle_centered
 print(rectangle_fn)
-#PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
-#net = Autoencoder_CAE()
+# PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
+# net = Autoencoder_CAE()
 # PATH = 'inpaintingv2/BACKUP2_v2Inpainting_CAEimgnet.pth'
 # PATH = "v2Inpainting_CAEimgnet.pth"
 # net = Autoencoder_CAEv2()
 net = None
+
+
 def reload_model(_=None):
     global net
-    PATH = 'celebaCAE.pth'# # v1
+    PATH = 'celebaCAE.pth'  # v1
     net = CelebACAE()
-    model_saving_format = "v2" #v1 for loading up just the model, not the optimizer and stuff
-    # PATH = 'celeba/BACKUP_4celebaCAE.pth'
-    # model_saving_format = "v1"
+    # v1 for loading up just the model, not the optimizer and stuff
+    model_saving_format = "v2"
+    PATH = 'celeba/BACKUP_4celebaCAE.pth'
+    model_saving_format = "v1"
     try:
         if model_saving_format == "v2":
             checkpoint = torch.load(PATH)
@@ -46,19 +53,23 @@ def reload_model(_=None):
         print("Cancelled model loading")
     # PATH = 'v3Inpainting_CAEimgnet.pth'
     # net = Autoencoder_CAEv3()
-    #PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
+    # PATH = 'inpaintingv1/BACKUP_2Inpainting_CAEimgnet.pth'
     # PATH = "Inpainting_CAEimgnet.pth"
-    #net = Autoencoder_CAE()
+    # net = Autoencoder_CAE()
     # PATH = 'inpaintingv2/BACKUP2_v2Inpainting_CAEimgnet.pth'
     # PATH = "v2Inpainting_CAEimgnet.pth"
     # net = Autoencoder_CAEv2()
     net.eval()
+
+
 reload_model(_=1)
+
+
 def get_avg_loss(_=None):
     with torch.no_grad():
         losses = []
         for item in tqdm.tqdm(data):
-            #item = data[random.randint(0,len(data)-1)]
+            # item = data[random.randint(0,len(data)-1)]
             input_ = np.array([item])
             input_ = torch.Tensor(input_)
             rectangle_fn(input_)
@@ -67,10 +78,12 @@ def get_avg_loss(_=None):
             losses.append(loss.item())
         avg_loss = sum(losses)/len(data)
         print("Loss:", avg_loss)
-        plt.text(0.5,2, f"Loss: {avg_loss}")
+        plt.text(0.5, 2, f"Loss: {avg_loss}")
+
+
 def test(_=None):
     with torch.no_grad():
-        item = data[random.randint(0,len(data)-1)]
+        item = data[random.randint(0, len(data)-1)]
         input_ = np.array([item])
         input_ = torch.Tensor(input_)
         rectangle_fn(input_)
@@ -78,19 +91,20 @@ def test(_=None):
         loss = criterion(result, torch.Tensor(np.array([item])))
         result = result.detach().numpy()
         result = result[0].astype(int)
-        #print(result.shape)
+        # print(result.shape)
         input_ = input_.numpy()[0].astype(int)
-        
 
-        #print(input_.shape)
+        # print(input_.shape)
         # Display the first image in the first subplot
-        axs[0].imshow(input_.transpose(1, 2, 0))  # Transpose to (64, 64, 3) for RGB format
+        # Transpose to (64, 64, 3) for RGB format
+        axs[0].imshow(input_.transpose(1, 2, 0))
         axs[0].axis('off')  # Turn off axis labels
         print(loss.item())
         # Display the second image in the second subplot
         axs[1].imshow(result.transpose(1, 2, 0))
         axs[1].axis('off')
         plt.draw()
+
 
 fig, axs = plt.subplots(1, 2)
 buttonax = fig.add_axes([0.7, 0.05, 0.1, 0.075])

@@ -10,10 +10,13 @@ print("imported")
 learning_rate = 0.001
 batch_size = 64
 num_epochs = 10
+
+
 def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo, encoding='bytes')
     return dict
+
 
 data = unpickle("images.pickle")
 print(data)
@@ -47,8 +50,7 @@ class Autoencoder_CAE(nn.Module):
             nn.ReLU(),
             nn.Conv2d(128, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
-            nn.Sigmoid()  # Use Sigmoid for the output layer if input is normalized between 0 and 1
+            nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1)
         )
 
     def forward(self, x):
@@ -66,8 +68,8 @@ print("model initialized")
 # Training loop
 for epoch in tqdm.trange(num_epochs):
     for data in tqdm.tqdm(splitted_data):
-        #print(data.shape)
-        #inputs = data.view(data.size(0), -1)
+        # print(data.shape)
+        # inputs = data.view(data.size(0), -1)
         inputs = data
         optimizer.zero_grad()
         print("zeroed")
