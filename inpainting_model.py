@@ -1,6 +1,10 @@
 import torch.nn as nn
 import torch
 
+def box_out(tensor, top, left, rwidth, rheight):
+    batch_size, num_channels, height, width = list(tensor.shape)
+    tensor[i, :, top:min(top+rheight, height), left:min(left+rwidth,width)] = 0
+
 def black_out_random_rectangle_centered(tensor):
     batch_size, num_channels, height, width = list(tensor.shape)
 
