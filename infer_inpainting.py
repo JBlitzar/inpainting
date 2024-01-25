@@ -78,7 +78,7 @@ def run_model(image, top, left, rwidth, rheight):
         return result, loss, image
 def take_and_process_image():
     # Take a picture (assuming the image is saved as 'input_image.jpg')
-    input_image_path = 'test.jpg'
+    input_image_path = 'test3.jpg'
     input_image = Image.open(input_image_path)
 
     # Crop to square and resize to 128x128
