@@ -20,7 +20,7 @@ https://www.kaggle.com/datasets/jessicali9530/celeba-dataset
 
 # USING: https://www.kaggle.com/datasets/badasstechie/celebahq-resized-256x256
 
-IMAGENET128: https://www.kaggle.com/datasets/akash2sharma/tiny-imagenet/data
+IMAGENET(64x64): https://www.kaggle.com/datasets/akash2sharma/tiny-imagenet/data
 
 # USING: TINY IMAGENET http://cs231n.stanford.edu/tiny-imagenet-200.zip
 
