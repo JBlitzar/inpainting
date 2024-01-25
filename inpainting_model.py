@@ -203,7 +203,7 @@ class CelebACAE(nn.Module):
 class CelebACAEv2(nn.Module):
     def __init__(self):
         dropout_rate = 0.2
-        super(CelebACAv2, self).__init__()
+        super(CelebACAEv2, self).__init__()
         # removed one downsample/upsample layer for a larger bottleneck
 
         # works on 128x128
@@ -236,7 +236,7 @@ class CelebACAEv2(nn.Module):
             nn.ReLU(),
             nn.Upsample(scale_factor=2, mode='nearest'),
             nn.Dropout(dropout_rate),
-            
+
             nn.Conv2d(128, 3, kernel_size=3, stride=1, padding=1),
             nn.Sigmoid()
         )
