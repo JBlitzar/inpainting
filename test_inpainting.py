@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, black_out_random_rectangle_centered
+from inpainting_model import CelebACAEv2, Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, black_out_random_rectangle_centered
 import pickle
 import numpy as np
 import random
@@ -33,12 +33,13 @@ net = None
 
 def reload_model(_=None):
     global net
-    PATH = 'celebaCAE.pth'  # v1
-    net = CelebACAE()
+    PATH = 'celebaCAEv2.pth'  # v1
+    net = CelebACAEv2()
     # v1 for loading up just the model, not the optimizer and stuff
     model_saving_format = "v2"
-    PATH = 'celeba/BACKUP_4celebaCAE.pth'
-    model_saving_format = "v1"
+    # net = CelebACAE()
+    # PATH = 'celeba/BACKUP_4celebaCAE.pth'
+    # model_saving_format = "v1"
     try:
         if model_saving_format == "v2":
             checkpoint = torch.load(PATH)
