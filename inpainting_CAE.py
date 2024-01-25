@@ -1,4 +1,4 @@
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, black_out_random_rectangle_centered
+from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE,CelebACAEv2, black_out_random_rectangle_centered
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 import os
@@ -58,8 +58,8 @@ print(dataset.size())
 
 
 # Instantiate model, define loss function, and optimizer
-PATH = 'celebaCAE.pth'
-model = CelebACAE()
+PATH = 'celebaCAEv2.pth'
+model = CelebACAEv2()
 # v1 for loading up just the model, not the optimizer and stuff
 model_loading_format = "v2"
 model_saving_format = "v2"
