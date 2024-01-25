@@ -78,7 +78,7 @@ def run_model(image, top, left, rwidth, rheight):
         return result, loss, image
 def take_and_process_image():
     # Take a picture (assuming the image is saved as 'input_image.jpg')
-    input_image_path = 'test2.jpg'
+    input_image_path = 'test.jpg'
     input_image = Image.open(input_image_path)
 
     # Crop to square and resize to 128x128
@@ -98,7 +98,7 @@ def take_and_process_image():
 
     # Use RectangleSelector for interactive rectangle drawing
     def onselect(eclick, erelease):
-        top = int(128-min(eclick.ydata, erelease.ydata))
+        top = int(min(eclick.ydata, erelease.ydata))
         left = int(min(eclick.xdata, erelease.xdata))
         rwidth = int(abs(erelease.xdata - eclick.xdata))
         rheight = int(abs(erelease.ydata - eclick.ydata))
