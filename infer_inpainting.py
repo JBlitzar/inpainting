@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
-from inpainting_model import box_out,Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE,CelebACAEv2, black_out_random_rectangle_centered
+from inpainting_model import box_out,Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE,CelebACAEv2, black_out_random_rectangle_centered, CelebACAEv3
 import pickle
 from matplotlib.widgets import RectangleSelector
 import numpy as np
@@ -33,8 +33,8 @@ net = None
 
 def reload_model(_=None):
     global net
-    PATH = 'celebaCAEv2.pth'#celebaCAE.pth'  # v1
-    net = CelebACAEv2()
+    PATH = 'celebaCAEv3.pth'#celebaCAE.pth'  # v1
+    net = CelebACAEv3()
     # v1 for loading up just the model, not the optimizer and stuff
     model_saving_format = "v2"
     # PATH = 'celeba/BACKUP_4celebaCAE.pth'

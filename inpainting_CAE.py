@@ -1,4 +1,4 @@
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE,CelebACAEv2, black_out_random_rectangle_centered
+from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE,CelebACAEv2, black_out_random_rectangle_centered, CelebACAEv3
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 import os
@@ -58,8 +58,8 @@ print(dataset.size())
 
 
 # Instantiate model, define loss function, and optimizer
-PATH = 'celebaCAEv2.pth'
-model = CelebACAEv2()
+PATH = 'celebaCAEv3.pth'
+model = CelebACAEv3()
 # v1 for loading up just the model, not the optimizer and stuff
 model_loading_format = "v2"
 model_saving_format = "v2"
@@ -89,6 +89,7 @@ for epoch in tqdm.trange(num_epochs):
     running_sum = 0
     i = 0
     for idx, data in enumerate(pbar):
+        desc = f"Loss: {round(current_loss*100)/100}"
         i = idx
         # print(data.shape)
         # inputs = data.view(data.size(0), -1)
@@ -96,14 +97,18 @@ for epoch in tqdm.trange(num_epochs):
         rectangle_fn(inputs)
         # print(torch.all(inputs.eq(data)))
         optimizer.zero_grad()
+        pbar.set_description(f"eval  | {desc}")
         outputs = model(inputs)
         # changed from  criterion(outputs, inputs)  because we want reconstructed to equal output
+        pbar.set_description(f"loss  | {desc}")
         loss = criterion(outputs, data)
-        current_loss = loss
+        current_loss = loss.item()
         running_sum += loss.item()
-        pbar.set_description(f"Loss: {round(current_loss.item()*100)/100}")
+        desc = f"Loss: {round(current_loss*100)/100}"
+        pbar.set_description(f"back  | {desc}")
         loss.backward()
         optimizer.step()
+        pbar.set_description(f"clean | {desc}")
         if idx % 50 == 0:
             if model_saving_format == "v2":
                 torch.save({
