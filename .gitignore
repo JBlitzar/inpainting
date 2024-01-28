@@ -5,6 +5,8 @@ tiny-imagenet-200.zip
 imgnet*.pickle
 celeba_hq_256/
 celeba.pickle
+celeba/dropout0.2/celebaCAEv3.pth.zip
+celebaCAEv3.pth
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -252,7 +252,7 @@ class CelebACAEv2(nn.Module):
 
 class CelebACAEv3(nn.Module):
     def __init__(self):
-        dropout_rate = 0.2
+        dropout_rate = 0.0
         super(CelebACAEv3, self).__init__()
         # removed one downsample/upsample layer for a larger bottleneck
 
