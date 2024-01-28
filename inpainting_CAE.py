@@ -60,10 +60,14 @@ print(dataset.size())
 # Instantiate model, define loss function, and optimizer
 PATH = 'celebaCAEv3.pth'
 model = CelebACAEv3()
+model.train()
+model.to(device)
 # v1 for loading up just the model, not the optimizer and stuff
 model_loading_format = "v2"
 model_saving_format = "v2"
 print(model_loading_format, model_saving_format)
+criterion = nn.MSELoss()
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 try:
     if model_loading_format == "v2":
         checkpoint = torch.load(PATH)
@@ -77,10 +81,7 @@ try:
 except Exception as e:
     print(e)
     print("Cancelled model loading")
-model.train()
-model.to(device)
-criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+
 print("model initialized")
 # Training loop
 for epoch in tqdm.trange(num_epochs):
