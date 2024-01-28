@@ -11,7 +11,7 @@ import torch.optim as optim
 import torch.nn as nn
 import torch
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore") # libressl thing
 
 writer = SummaryWriter()
 warnings.filterwarnings("default")
