@@ -60,7 +60,7 @@ def reload_model(_=None):
     # PATH = 'inpaintingv2/BACKUP2_v2Inpainting_CAEimgnet.pth'
     # PATH = "v2Inpainting_CAEimgnet.pth"
     # net = Autoencoder_CAEv2()
-    net.eval()
+    #net.eval()
 
 
 reload_model(_=1)
