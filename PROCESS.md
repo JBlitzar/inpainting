@@ -7,3 +7,5 @@ the discoloration is real
 Jan 30:
 Does not generalize well to faces at different angles, farther away, non-centered
 Learning curve has plateaued, but works relatively well
+See notes.txt
+Next step: data augmentation with cnn

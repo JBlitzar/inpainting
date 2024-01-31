@@ -1,0 +1,37 @@
+Over-regularizing
+underfitting
+Due to small bottleneck, or adding a FC layer (the two things I added)
+weird weight initialization, found a bad local minimum
+overfitting on version without linears?
+unable to overfit with linears?
+validation set (80/20)
+test vs val: Training is used to optimize your weights, no overlapping data in split
+val is for tuning hyperparameters: Train with various hyperparameters, look at val accuracy, make sure not overfitting
+test set is to see how well it generalizes: "hyperparameter overfitting"
+
+Gold standard: make sure you arent cheating by checking the test set and then tweaking them after. 
+
+K-fold cross validation
+way to get more data, not data augmentation
+you have 80/20, get your 80% and split it into k=5
+fold 1 is val for folds 2,3,4,5 Train
+fold 2 is val for folds 1,3,4,5 train
+
+image centering: eyes centered, training is easier
+try image augmentation: randomly rotate, resize, recolor, etc = more data, more variation, harder to learn, better generalization
+https://pytorch.org/vision/stable/transforms.html
+https://pytorch.org/vision/0.13/transforms.html
+
+out-of-distribution image: neural networks dont know how to say "idk"
+flipping bits until it gives a different result
+gradient descent: too high learning rate, giant spike
+spike could be a data issue, outliers, etc while training.
+too low learning rate: gets stuck easily, takes a long time
+next steps: trying with real-world images, augmentation, unet
+partial convolution? (very challenging, I would have to recreate the paper and code the stuff myself) https://openaccess.thecvf.com/content_ECCV_2018/papers/Guilin_Liu_Image_Inpainting_for_ECCV_2018_paper.pdf
+
+Next step: data augmentation with cnn
+
+find a research paper with code on github too: replication
+
+
