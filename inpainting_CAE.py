@@ -1,4 +1,5 @@
 from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE,CelebACAEv2, black_out_random_rectangle_centered, CelebACAEv3
+from torchvision.transforms import v2
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 import os
@@ -29,7 +30,7 @@ if torch.backends.mps.is_available():
 learning_rate = 0.005
 batch_size = 64
 num_epochs = 128
-rectangle_fn = black_out_random_rectangle_centered
+rectangle_fn = black_out_random_rectangle
 print("Hyperparameters: ")
 print(learning_rate, batch_size, num_epochs, rectangle_fn)
 
@@ -40,26 +41,42 @@ def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo, encoding='bytes')
     return dict
+def savepickle(filename, obj):
+     with open(filename, 'wb+') as file:
+        pickle.dump(obj, file)
+if os.path.exists("cached_data.pickle"):
+    print("===============================")
+    print("IMPORTANT: DATA LOADED FROM CACHE")
+    print("===============================")
+    splitted_data = unpickle("cached_data.pickle")
+else:
+    print("no cache found, applying transforms")
+    data = unpickle("celeba.pickle")
+    print("data unpickled")
+    np.random.shuffle(data)
+    # print(data.shape)
+    # print(data[0].shape)
+    # print(data[0][0].shape)
+    dataset = torch.Tensor(data)
+    print("data converted")
+    transforms = v2.Compose([ # epic data augmentation
+        v2.RandomRotation(20),
+        v2.RandomResizedCrop(size=(128, 128), antialias=True, scale=(0.8, 1.0)),
+        v2.RandomHorizontalFlip(p=0.5),
+    ])
+    dataset = transforms(dataset)
+    print("data transformed")
+    sections_size = batch_size
+    splitted_data = tuple([t.to(device)
+                        for t in torch.split(dataset, sections_size)])
 
-
-data = unpickle("celeba.pickle")
-np.random.shuffle(data)
-# print(data.shape)
-# print(data[0].shape)
-# print(data[0][0].shape)
-dataset = torch.Tensor(data)
-sections_size = batch_size
-splitted_data = tuple([t.to(device)
-                      for t in torch.split(dataset, sections_size)])
-
+    savepickle("cached_data.pickle", splitted_data)
 print("Data loaded.")
-print("Shapes:")
-print(dataset.size())
 
 
 # Instantiate model, define loss function, and optimizer
-PATH = 'celebaCAEv3.pth'
-model = CelebACAEv3()
+PATH = 'celebaCAE.pth'
+model = CelebACAE()
 model.train()
 model.to(device)
 # v1 for loading up just the model, not the optimizer and stuff

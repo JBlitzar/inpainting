@@ -33,7 +33,7 @@ net = None
 
 def reload_model(_=None):
     global net
-    PATH = 'celebaCAEv3.pth'  # v1
+    PATH = 'celebaCAE.pth'  # v1
     net = CelebACAEv3()
     # v1 for loading up just the model, not the optimizer and stuff
     model_saving_format = "v2"
