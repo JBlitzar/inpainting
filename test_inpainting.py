@@ -17,7 +17,9 @@ def unpickle(file):
 
 
 criterion = nn.MSELoss()
-data = unpickle("celeba.pickle")
+data = random.choice(unpickle("cached_data.pickle"))#unpickle("celeba.pickle")
+data = data.cpu().numpy()
+print("cached")
 print(data.shape)
 print(data[0].shape)
 print(data[0][0].shape)
@@ -34,7 +36,7 @@ net = None
 def reload_model(_=None):
     global net
     PATH = 'celebaCAE.pth'  # v1
-    net = CelebACAEv3()
+    net = CelebACAE()
     # v1 for loading up just the model, not the optimizer and stuff
     model_saving_format = "v2"
     # net = CelebACAE()

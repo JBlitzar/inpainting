@@ -44,7 +44,8 @@ def unpickle(file):
 def savepickle(filename, obj):
      with open(filename, 'wb+') as file:
         pickle.dump(obj, file)
-if os.path.exists("cached_data.pickle"):
+CACHE = True
+if os.path.exists("cached_data.pickle") and CACHE:
     print("===============================")
     print("IMPORTANT: DATA LOADED FROM CACHE")
     print("===============================")
