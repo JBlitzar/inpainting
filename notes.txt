@@ -39,3 +39,6 @@ Feb 6:
 Image augmentation has been successful with very small losses on both augmented and non-augmented data.
 Very promising results on testing images.
 Surprisingly, still bad results when generalizing to the real world
+--
+It was doing the same augmentation for all the images
+Changed it to do different augmentation, learning is "harder" as expected

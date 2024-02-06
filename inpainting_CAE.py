@@ -17,7 +17,7 @@ import torch
 from colorama import Fore, Back, Style
 
 
-writer = SummaryWriter()
+
 warnings.filterwarnings("default")
 print("imported")
 np.random.seed()
@@ -47,7 +47,7 @@ def unpickle(file):
 def savepickle(filename, obj):
      with open(filename, 'wb+') as file:
         pickle.dump(obj, file)
-CACHE = False
+CACHE = True
 if os.path.exists("cached_data.pickle") and CACHE:
     print("===============================")
     print(Fore.YELLOW+"IMPORTANT: DATA LOADED FROM CACHE"+Style.RESET_ALL)
@@ -63,12 +63,16 @@ else:
     # print(data[0][0].shape)
     dataset = torch.Tensor(data)
     print("data converted")
+    print("transforming...")
     transforms = v2.Compose([ # epic data augmentation
         v2.RandomRotation(20),
         v2.RandomResizedCrop(size=(128, 128), antialias=True, scale=(0.8, 1.0)),
         v2.RandomHorizontalFlip(p=0.5),
     ])
-    dataset = transforms(dataset)
+    print(dataset.size())
+    dataset = np.array([transforms(d).numpy() for d in tqdm.tqdm(dataset)]) # cast to numpy, cast to tensor
+    dataset = torch.Tensor(dataset) # Cast to tensor takes forever
+    print(dataset.size())
     print("data transformed")
     sections_size = batch_size
     splitted_data = tuple([t.to(device)
@@ -96,7 +100,7 @@ print(model_loading_format, model_saving_format)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 try:
-    #raise KeyboardInterrupt
+    #raise IndentationError
     if model_loading_format == "v2":
         checkpoint = torch.load(PATH)
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -114,6 +118,7 @@ except Exception as e:
     print("=========IMPORTANT=========")
 
 print("model initialized")
+writer = SummaryWriter()
 # Training loop
 for epoch in tqdm.trange(num_epochs):
     pbar = tqdm.tqdm(splitted_data, leave=False)
