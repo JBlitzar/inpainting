@@ -17,8 +17,8 @@ def unpickle(file):
 
 
 criterion = nn.MSELoss()
-data = unpickle("celeba.pickle")#random.choice(unpickle("cached_data.pickle"))#
-data #= data.cpu().numpy()
+data = random.choice(unpickle("cached_data.pickle"))[0]#unpickle("celeba.pickle")#
+data = data.cpu().numpy()
 print("cached")
 print(data.shape)
 print(data[0].shape)

@@ -37,4 +37,5 @@ find a research paper with code on github too: replication
 
 Feb 6: 
 Image augmentation has been successful with very small losses on both augmented and non-augmented data.
+Very promising results on testing images.
 Surprisingly, still bad results when generalizing to the real world

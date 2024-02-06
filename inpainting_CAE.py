@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore") # libressl thing
 from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE,CelebACAEv2, black_out_random_rectangle_centered, CelebACAEv3
 from torchvision.transforms import v2
 from torch.utils.tensorboard import SummaryWriter
@@ -11,8 +13,9 @@ from torch.utils.data import DataLoader
 import torch.optim as optim
 import torch.nn as nn
 import torch
-import warnings
-warnings.filterwarnings("ignore") # libressl thing
+
+from colorama import Fore, Back, Style
+
 
 writer = SummaryWriter()
 warnings.filterwarnings("default")
@@ -47,9 +50,9 @@ def savepickle(filename, obj):
 CACHE = False
 if os.path.exists("cached_data.pickle") and CACHE:
     print("===============================")
-    print("IMPORTANT: DATA LOADED FROM CACHE")
+    print(Fore.YELLOW+"IMPORTANT: DATA LOADED FROM CACHE"+Style.RESET_ALL)
     print("===============================")
-    splitted_data = unpickle("cached_data.pickle")
+    splitted_data = unpickle("cached_data.pickle")[0]
 else:
     print("no cache found/cache disabled, applying transforms")
     data = unpickle("celeba.pickle")
@@ -70,8 +73,14 @@ else:
     sections_size = batch_size
     splitted_data = tuple([t.to(device)
                         for t in torch.split(dataset, sections_size)])
+    print(f"Moved to {device}")
+    train_size = int(0.8 * len(splitted_data))
+    test_size = len(splitted_data) - train_size
+    train_dataset, test_dataset = torch.utils.data.random_split(splitted_data, [train_size, test_size])
+    print("splitted")
+    savepickle("cached_data.pickle", [train_dataset, test_dataset])
 
-    savepickle("cached_data.pickle", splitted_data)
+
 print("Data loaded.")
 
 
@@ -87,6 +96,7 @@ print(model_loading_format, model_saving_format)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 try:
+    #raise KeyboardInterrupt
     if model_loading_format == "v2":
         checkpoint = torch.load(PATH)
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -97,8 +107,11 @@ try:
         model.load_state_dict(torch.load(PATH))
     print("Model loaded", PATH)
 except Exception as e:
+    print("=========IMPORTANT=========")
     print(e)
-    print("Cancelled model loading")
+    print(Fore.YELLOW+"Cancelled model loading"+Style.RESET_ALL)
+    print()
+    print("=========IMPORTANT=========")
 
 print("model initialized")
 # Training loop
@@ -140,7 +153,7 @@ for epoch in tqdm.trange(num_epochs):
                 torch.save(model.state_dict(), PATH)
     writer.add_scalar("Loss/train", running_sum/(i+1), epoch)
     print("=======================================================")
-    print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
+    print(Fore.CYAN+f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}'+Style.RESET_ALL)
     print("=======================================================")
     if model_saving_format == "v2":
 
