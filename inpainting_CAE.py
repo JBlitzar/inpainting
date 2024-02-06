@@ -44,14 +44,14 @@ def unpickle(file):
 def savepickle(filename, obj):
      with open(filename, 'wb+') as file:
         pickle.dump(obj, file)
-CACHE = True
+CACHE = False
 if os.path.exists("cached_data.pickle") and CACHE:
     print("===============================")
     print("IMPORTANT: DATA LOADED FROM CACHE")
     print("===============================")
     splitted_data = unpickle("cached_data.pickle")
 else:
-    print("no cache found, applying transforms")
+    print("no cache found/cache disabled, applying transforms")
     data = unpickle("celeba.pickle")
     print("data unpickled")
     np.random.shuffle(data)
