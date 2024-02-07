@@ -93,7 +93,7 @@ else:
     savepickle("cached_data.pickle", [train_dataset, test_dataset])
 """
 transforms = v2.Compose([  # epic data augmentation
-    v2.ToTensor(),
+    v2.Compose([v2.ToImage(), v2.ToDtype(torch.float32, scale=True)]),#v2.ToTensor(), # toTensor is deprecated
     v2.RandomRotation(20),
     v2.RandomResizedCrop(
         size=(128, 128), antialias=True, scale=(0.8, 1.0)),
@@ -151,7 +151,6 @@ for epoch in tqdm.trange(num_epochs):
         i = idx
         # print(data.shape)
         # inputs = data.view(data.size(0), -1)
-        pbar.set_description(f"detach and clone  | {desc}")
         inputs = data.detach().clone().to(device)  # deepcopy
         rectangle_fn(inputs)
         last_input = inputs
@@ -192,12 +191,12 @@ for epoch in tqdm.trange(num_epochs):
     fig, axes = plt.subplots(1, 2, figsize=(10, 5))  # 1 row, 2 columns
 
     # Displaying the first image
-    axes[0].imshow(comparisoninp)
+    axes[0].imshow(comparisoninp.detach().cpu())
     axes[0].set_title('Original')
     axes[0].axis('off')  # Hide the axes ticks
 
     # Displaying the second image
-    axes[1].imshow(comparisonout)
+    axes[1].imshow(comparisonout.detach().cpu())
     axes[1].set_title('Reconstructed')
     axes[1].axis('off')  # Hide the axes ticks
     plt.savefig(f"train_imgs/image_{epoch}.png")
