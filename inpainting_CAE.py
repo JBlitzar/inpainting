@@ -144,8 +144,8 @@ for epoch in tqdm.trange(num_epochs):
     last_input = None
     last_output = None
     for idx, data in enumerate(pbar):
-        desc = f"Loss: {round(current_loss*100)/100}"
-        pbar.set_description(f"todevice  | {desc}")
+        desc = f"Loss: {round(current_loss,4)}"
+        #pbar.set_description(f"2dev  | {desc}")
         data = data.to(device)
 
         i = idx
@@ -164,7 +164,7 @@ for epoch in tqdm.trange(num_epochs):
         loss = criterion(outputs, data)
         current_loss = loss.item()
         running_sum += loss.item()
-        desc = f"Loss: {round(current_loss*100)/100}"
+        desc = f"Loss: {round(current_loss,4)}"
         pbar.set_description(f"back  | {desc}")
         loss.backward()
         optimizer.step()
