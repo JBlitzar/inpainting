@@ -48,3 +48,5 @@ Attention mechanism see paper
 Dialated convolution
 Do dialations at higher layers
 partial/gated convolution (?)
+
+Unexpected oom errors when running it with a new dataloader -> was using 256x256 images instead of 128x128

@@ -1,5 +1,7 @@
 # inpainting
 
+## If you are not me, see notes.txt
+
 - Understanding the data
 - Visualizing reconstructions when training
 - experiment with bottleneck size
