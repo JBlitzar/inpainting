@@ -42,3 +42,9 @@ Surprisingly, still bad results when generalizing to the real world
 --
 It was doing the same augmentation for all the images
 Changed it to do different augmentation, learning is "harder" as expected
+Coding class:
+
+Attention mechanism see paper
+Dialated convolution
+Do dialations at higher layers
+partial/gated convolution (?)
