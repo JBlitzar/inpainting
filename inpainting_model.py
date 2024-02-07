@@ -1,10 +1,13 @@
 import torch.nn as nn
 import torch
 
+
 def box_out(tensor, top, left, rwidth, rheight):
     batch_size, num_channels, height, width = list(tensor.shape)
     for i in range(batch_size):
-        tensor[i, :, top:min(top+rheight, height), left:min(left+rwidth,width)] = 0
+        tensor[i, :, top:min(top+rheight, height),
+               left:min(left+rwidth, width)] = 0
+
 
 def black_out_random_rectangle_centered(tensor):
     batch_size, num_channels, height, width = list(tensor.shape)
@@ -16,7 +19,9 @@ def black_out_random_rectangle_centered(tensor):
         rect_height = torch.randint(20, int(height/3), (1,)).item()
         rect_width = torch.randint(20, int(width/3), (1,)).item()
         # Black out the selected rectangle in all channels for the current image
-        tensor[i, :, top:min(top+rect_height, height), left:min(left+rect_width,width)] = 0
+        tensor[i, :, top:min(top+rect_height, height),
+               left:min(left+rect_width, width)] = 0
+
 
 def black_out_random_rectangle(tensor):
     batch_size, num_channels, height, width = list(tensor.shape)
@@ -28,7 +33,9 @@ def black_out_random_rectangle(tensor):
         rect_height = torch.randint(1, int(height/2), (1,)).item()
         rect_width = torch.randint(1, int(width/2), (1,)).item()
         # Black out the selected rectangle in all channels for the current image
-        tensor[i, :, top:min(top+rect_height, height), left:min(left+rect_width,width)] = 0
+        tensor[i, :, top:min(top+rect_height, height),
+               left:min(left+rect_width, width)] = 0
+
 
 def black_out_random_rectangle_legacy(tensor):
     batch_size, num_channels, height, width = list(tensor.shape)
@@ -40,7 +47,9 @@ def black_out_random_rectangle_legacy(tensor):
         rect_height = torch.randint(1, height-top, (1,)).item()
         rect_width = torch.randint(1, width-left, (1,)).item()
         # Black out the selected rectangle in all channels for the current image
-        tensor[i, :, top:min(top+rect_height, height), left:min(left+rect_width,width)] = 0
+        tensor[i, :, top:min(top+rect_height, height),
+               left:min(left+rect_width, width)] = 0
+
 
 class Autoencoder_CAE(nn.Module):
     def __init__(self):
@@ -72,6 +81,8 @@ class Autoencoder_CAE(nn.Module):
         x = self.decoder(x)
         x = x * 255
         return x
+
+
 class Autoencoder_CAEv2(nn.Module):
     def __init__(self):
         super(Autoencoder_CAEv2, self).__init__()
@@ -80,11 +91,11 @@ class Autoencoder_CAEv2(nn.Module):
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            
+
             nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            
+
             nn.Conv2d(32, 16, kernel_size=3, stride=1, padding=1),
             nn.ReLU()
         )
@@ -93,12 +104,12 @@ class Autoencoder_CAEv2(nn.Module):
         self.decoder = nn.Sequential(
             nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.Upsample(scale_factor=2, mode='nearest'), # bilinear, nearest
-            
+            nn.Upsample(scale_factor=2, mode='nearest'),  # bilinear, nearest
+
             nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Upsample(scale_factor=2, mode='nearest'),
-            
+
             nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
             nn.Sigmoid()
         )
@@ -109,6 +120,8 @@ class Autoencoder_CAEv2(nn.Module):
         x = self.decoder(x)
         x = x * 255
         return x
+
+
 class Autoencoder_CAEv3(nn.Module):
     def __init__(self):
         super(Autoencoder_CAEv3, self).__init__()
@@ -118,11 +131,11 @@ class Autoencoder_CAEv3(nn.Module):
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            
+
             nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            
+
             nn.Conv2d(32, 16, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Flatten()  # Flatten layer
@@ -131,16 +144,17 @@ class Autoencoder_CAEv3(nn.Module):
         # Decoder layers
         self.decoder = nn.Sequential(
 
-            nn.Unflatten(dim=1, unflattened_size=(16, reduced_width, reduced_width)),  # Reshape layer
-            
+            nn.Unflatten(dim=1, unflattened_size=(
+                16, reduced_width, reduced_width)),  # Reshape layer
+
             nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Upsample(scale_factor=2, mode='nearest'),  # Bilinear or nearest
-            
+
             nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Upsample(scale_factor=2, mode='nearest'),
-            
+
             nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
             nn.Sigmoid()
         )
@@ -152,6 +166,8 @@ class Autoencoder_CAEv3(nn.Module):
         x = self.decoder(x)
         x = x * 255
         return x
+
+
 class CelebACAE(nn.Module):
     def __init__(self):
         super(CelebACAE, self).__init__()
@@ -163,11 +179,11 @@ class CelebACAE(nn.Module):
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            
+
             nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            
+
             nn.Conv2d(32, 16, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2)
@@ -176,11 +192,11 @@ class CelebACAE(nn.Module):
         # Decoder layers
         self.decoder = nn.Sequential(
 
-            
+
             nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Upsample(scale_factor=2, mode='nearest'),  # Bilinear or nearest
-            
+
             nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Upsample(scale_factor=2, mode='nearest'),
@@ -188,18 +204,20 @@ class CelebACAE(nn.Module):
             nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Upsample(scale_factor=2, mode='nearest'),
-            
+
             nn.Conv2d(128, 3, kernel_size=3, stride=1, padding=1),
             nn.Sigmoid()
         )
 
     def forward(self, x):
-        x = x / 255
+        # x = x / 255
         # Define forward pass
         x = self.encoder(x)
         x = self.decoder(x)
-        x = x * 255
+        # x = x * 255
         return x
+
+
 class CelebACAEv2(nn.Module):
     def __init__(self):
         dropout_rate = 0.2
@@ -213,7 +231,7 @@ class CelebACAEv2(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Dropout(dropout_rate),
-            
+
             nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
@@ -224,9 +242,9 @@ class CelebACAEv2(nn.Module):
         # Decoder layers
         self.decoder = nn.Sequential(
 
-            
-           
-            
+
+
+
             nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Upsample(scale_factor=2, mode='nearest'),
@@ -263,7 +281,7 @@ class CelebACAEv3(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Dropout(dropout_rate),
-            
+
             nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
@@ -278,13 +296,13 @@ class CelebACAEv3(nn.Module):
 
         # Decoder layers
         self.decoder = nn.Sequential(
-            nn.Linear(2048,4096),
+            nn.Linear(2048, 4096),
             nn.Unflatten(dim=1, unflattened_size=(16, 16, 16)),
 
             nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Upsample(scale_factor=2, mode='nearest'),  # Bilinear or nearest
-            
+
             nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Upsample(scale_factor=2, mode='nearest'),

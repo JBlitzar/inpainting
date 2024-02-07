@@ -1,21 +1,21 @@
-import warnings
-warnings.filterwarnings("ignore") # libressl thing
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE,CelebACAEv2, black_out_random_rectangle_centered, CelebACAEv3
-from torchvision.transforms import v2
-from torch.utils.tensorboard import SummaryWriter
-from datetime import datetime
-import os
-import numpy as np
-import pickle
-import tqdm
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
-import torch.optim as optim
-import torch.nn as nn
-import torch
-
+from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, CelebACAEv2, black_out_random_rectangle_centered, CelebACAEv3
+from inpainting_CAE_setup import CelebADataset
 from colorama import Fore, Back, Style
-
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+import tqdm
+import pickle
+import numpy as np
+import os
+from datetime import datetime
+from torch.utils.tensorboard import SummaryWriter
+from torchvision.transforms import v2
+import warnings
+import matplotlib.pyplot as plt
+warnings.filterwarnings("ignore")  # libressl thing
 
 
 warnings.filterwarnings("default")
@@ -31,7 +31,7 @@ if torch.backends.mps.is_available():
 
 # hyperparameters
 learning_rate = 0.005
-batch_size = 64
+batch_size = 128
 num_epochs = 128
 rectangle_fn = black_out_random_rectangle_centered
 print("Hyperparameters: ")
@@ -44,11 +44,15 @@ def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo, encoding='bytes')
     return dict
+
+
 def savepickle(filename, obj):
-     with open(filename, 'wb+') as file:
+    with open(filename, 'wb+') as file:
         pickle.dump(obj, file)
-CACHE = True
-if os.path.exists("cached_data.pickle") and CACHE:
+
+
+CACHE = False
+"""if os.path.exists("cached_data.pickle") and CACHE:
     print("===============================")
     print(Fore.YELLOW+"IMPORTANT: DATA LOADED FROM CACHE"+Style.RESET_ALL)
     print("===============================")
@@ -64,27 +68,39 @@ else:
     dataset = torch.Tensor(data)
     print("data converted")
     print("transforming...")
-    transforms = v2.Compose([ # epic data augmentation
+    transforms = v2.Compose([  # epic data augmentation
         v2.RandomRotation(20),
-        v2.RandomResizedCrop(size=(128, 128), antialias=True, scale=(0.8, 1.0)),
+        v2.RandomResizedCrop(
+            size=(128, 128), antialias=True, scale=(0.8, 1.0)),
         v2.RandomHorizontalFlip(p=0.5),
     ])
+    # dataset = transforms(dataset)
     print(dataset.size())
-    dataset = np.array([transforms(d).numpy() for d in tqdm.tqdm(dataset)]) # cast to numpy, cast to tensor
-    dataset = torch.Tensor(dataset) # Cast to tensor takes forever
+    # cast to numpy, cast to tensor
+    dataset = np.array([transforms(d).numpy() for d in tqdm.tqdm(dataset)])
+    dataset = torch.Tensor(dataset)  # Cast to tensor takes forever
     print(dataset.size())
     print("data transformed")
     sections_size = batch_size
     splitted_data = tuple([t.to(device)
-                        for t in torch.split(dataset, sections_size)])
+                           for t in torch.split(dataset, sections_size)])
     print(f"Moved to {device}")
     train_size = int(0.8 * len(splitted_data))
     test_size = len(splitted_data) - train_size
-    train_dataset, test_dataset = torch.utils.data.random_split(splitted_data, [train_size, test_size])
+    train_dataset, test_dataset = torch.utils.data.random_split(
+        splitted_data, [train_size, test_size])
     print("splitted")
     savepickle("cached_data.pickle", [train_dataset, test_dataset])
-
-
+"""
+transforms = v2.Compose([  # epic data augmentation
+    v2.ToTensor(),
+    v2.RandomRotation(20),
+    v2.RandomResizedCrop(
+        size=(128, 128), antialias=True, scale=(0.8, 1.0)),
+    v2.RandomHorizontalFlip(p=0.5),
+])
+dataset = CelebADataset(transform=transforms)
+data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 print("Data loaded.")
 
 
@@ -100,7 +116,7 @@ print(model_loading_format, model_saving_format)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 try:
-    #raise IndentationError
+    # raise IndentationError
     if model_loading_format == "v2":
         checkpoint = torch.load(PATH)
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -121,21 +137,29 @@ print("model initialized")
 writer = SummaryWriter()
 # Training loop
 for epoch in tqdm.trange(num_epochs):
-    pbar = tqdm.tqdm(splitted_data, leave=False)
+    pbar = tqdm.tqdm(data_loader, leave=False)
     current_loss = 0
     running_sum = 0
     i = 0
+    last_input = None
+    last_output = None
     for idx, data in enumerate(pbar):
         desc = f"Loss: {round(current_loss*100)/100}"
+        pbar.set_description(f"todevice  | {desc}")
+        data = data.to(device)
+
         i = idx
         # print(data.shape)
         # inputs = data.view(data.size(0), -1)
-        inputs = data.detach().clone()  # deepcopy
+        pbar.set_description(f"detach and clone  | {desc}")
+        inputs = data.detach().clone().to(device)  # deepcopy
         rectangle_fn(inputs)
+        last_input = inputs
         # print(torch.all(inputs.eq(data)))
         optimizer.zero_grad()
         pbar.set_description(f"eval  | {desc}")
         outputs = model(inputs)
+        last_output = outputs
         # changed from  criterion(outputs, inputs)  because we want reconstructed to equal output
         pbar.set_description(f"loss  | {desc}")
         loss = criterion(outputs, data)
@@ -158,8 +182,25 @@ for epoch in tqdm.trange(num_epochs):
                 torch.save(model.state_dict(), PATH)
     writer.add_scalar("Loss/train", running_sum/(i+1), epoch)
     print("=======================================================")
-    print(Fore.CYAN+f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}'+Style.RESET_ALL)
+    print(
+        Fore.CYAN+f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}'+Style.RESET_ALL)
     print("=======================================================")
+    comparisoninp = inputs[0]
+    comparisonout = outputs[0]
+    comparisoninp = torch.transpose(comparisoninp, 0, 2)
+    comparisonout = torch.transpose(comparisonout, 0, 2)
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))  # 1 row, 2 columns
+
+    # Displaying the first image
+    axes[0].imshow(comparisoninp)
+    axes[0].set_title('Original')
+    axes[0].axis('off')  # Hide the axes ticks
+
+    # Displaying the second image
+    axes[1].imshow(comparisonout)
+    axes[1].set_title('Reconstructed')
+    axes[1].axis('off')  # Hide the axes ticks
+    plt.savefig(f"train_imgs/image_{epoch}.png")
     if model_saving_format == "v2":
 
         torch.save({
