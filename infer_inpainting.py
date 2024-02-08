@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
-from inpainting_model import box_out, Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, CelebACAEv2, black_out_random_rectangle_centered, CelebACAEv3
+from inpainting_model import box_out, Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, CelebACAEv2, black_out_random_rectangle_centered
 import pickle
 from matplotlib.widgets import RectangleSelector
 import numpy as np
@@ -35,8 +35,8 @@ net = None
 
 def reload_model(_=None):
     global net
-    PATH = 'celebaCAEv3.pth'  # celebaCAE.pth'  # v1
-    net = CelebACAEv3()
+    PATH = 'celebaCAEv2.pth'  # celebaCAE.pth'  # v1
+    net = CelebACAEv2()
     # v1 for loading up just the model, not the optimizer and stuff
     model_saving_format = "v2"
     # PATH = 'celeba/BACKUP_4celebaCAE.pth'
@@ -71,14 +71,15 @@ def run_model(image, top, left, rwidth, rheight):
     with torch.no_grad():
         image_ = torch.Tensor(
             np.array([np.transpose(np.array(image), (2, 0, 1))]))
+        image_ /= 255
         box_out(image_, top, left, rwidth, rheight)
         print(image_.size())
         result = net(image_)
         loss = None
         # loss = criterion(result, torch.Tensor(np.array([np.array(image)])))
         result = result.detach().numpy()
-        result = result[0].astype(int)
-        image = np.array([np.array(image)])[0].astype(int)
+        result = result[0]
+        image = np.array([np.array(image)])[0]
         return result, loss, image
 
 
@@ -126,7 +127,7 @@ def take_and_process_image():
 
 def display_images(original, inpainted):
     original = np.array(original).astype(np.uint8)
-    inpainted = np.transpose(np.array(inpainted), (1, 2, 0)).astype(np.uint8)
+    inpainted = (np.transpose(np.array(inpainted)*255, (1, 2, 0))).astype(np.uint8)
     print(original.shape)
     print(inpainted.shape)
     original_image = Image.fromarray(original)
