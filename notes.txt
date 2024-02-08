@@ -50,3 +50,11 @@ Do dialations at higher layers
 partial/gated convolution (?)
 
 Unexpected oom errors when running it with a new dataloader -> was using 256x256 images instead of 128x128
+
+Feb 8
+--
+https://www.desmos.com/calculator/hvv3elxnpm
+Dialated convolutions actually *reduce* feature map size, add padding to account for it.
+Implemented dialated convs.
+Made the switch to 0-1 instead of 0-255 data, smaller loss values and better training. Had to wrangle the images
+It's good to finally use a dataloader.
