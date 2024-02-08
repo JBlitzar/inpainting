@@ -64,3 +64,15 @@ attention mechanisms
 datasets: *imagenet, *celebahq, places2, paris street view
 SNR error? The peak signal-to-noise ratio (PSNR) is based on the error between corresponding pixels and is used to evaluate the quality of an image in comparison to the true image. The value typically ranges between 20 and 40. A higher value indicates lower distortion
 and better image quality. 
+
+SSIM error The structural similarity index (SSIM) measures the structural similarity of two images, simulating human visual perception. A larger value suggests less image distortion. When two images are identical, the SSIM value is 1. The theory behind SSIM suggests that natural images possess a highly structured feature, meaning pixels have a strong correlation that carries important information about the structure of visual scenes. In its application, images are often divided into blocks, and the SSIM is calculated for each block before taking the average. Given two images (x and y), the formula to compute SSIM is:
+
+French inception distance: looks promising!! https://pytorch.org/torcheval/main/generated/torcheval.metrics.FrechetInceptionDistance.html
+
+someone coded it for me on pytorch https://github.com/bonlime/pytorch-tools/blob/master/pytorch_tools/metrics/psnr.py
+
+
+Discriminator after reconstruction?
+t'=Decoder(Encoder(T))
+Loss between reconstructed and original, but also you can have adversarial loss
+This is represented as Lad = maxp Ex∼X[log(D(e))] − Ez∼Z[log(1 − D(G(z)))], where D is the discriminator, G is the generator, X is the distribution of real images, and Z is the distribution of the latent space. 
