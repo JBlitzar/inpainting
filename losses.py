@@ -27,4 +27,10 @@ class SSIM:
 
     @staticmethod
     def __call__(img1, img2):
+        loss = []
+        for i, x in enumerate(img1):
+            loss.append(self._ssim(x,img2[i]))
+        return torch.Tensor(loss)
+    @staticmethod
+    def _ssim(img1, img2):
         return 1-ssim(img1, img2, data_range = (torch.max(img1)-torch.min(img1)))

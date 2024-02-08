@@ -116,7 +116,9 @@ model.to(device)
 model_loading_format = "v2"
 model_saving_format = "v2"
 print(model_loading_format, model_saving_format)
-criterion = nn.MSELoss()
+
+criterion = SSIM()#nn.MSELoss()
+
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 try:
     #raise IndentationError
@@ -164,7 +166,7 @@ for epoch in tqdm.trange(num_epochs):
         last_output = outputs
         # changed from  criterion(outputs, inputs)  because we want reconstructed to equal output
         pbar.set_description(f"loss  | {desc}")
-        loss = criterion(outputs, data)
+        loss = criterion(outputs, data).to(device)
         current_loss = loss.item()
         running_sum += loss.item()
         desc = f"Loss: {round(current_loss,4)}"
