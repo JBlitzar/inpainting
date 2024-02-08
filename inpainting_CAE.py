@@ -2,6 +2,7 @@ import warnings
 warnings.filterwarnings("ignore")  # libressl thing
 from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, CelebACAEv2, black_out_random_rectangle_centered
 from inpainting_CAE_setup import CelebADataset
+from losses import SSIM
 from colorama import Fore, Back, Style
 import torch
 import torch.nn as nn
