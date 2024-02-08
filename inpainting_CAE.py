@@ -1,4 +1,6 @@
-from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, CelebACAEv2, black_out_random_rectangle_centered, CelebACAEv3
+import warnings
+warnings.filterwarnings("ignore")  # libressl thing
+from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, CelebACAEv2, black_out_random_rectangle_centered
 from inpainting_CAE_setup import CelebADataset
 from colorama import Fore, Back, Style
 import torch
@@ -13,9 +15,9 @@ import os
 from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.transforms import v2
-import warnings
+
 import matplotlib.pyplot as plt
-warnings.filterwarnings("ignore")  # libressl thing
+
 
 
 warnings.filterwarnings("default")
@@ -105,8 +107,8 @@ print("Data loaded.")
 
 
 # Instantiate model, define loss function, and optimizer
-PATH = 'celebaCAE.pth'
-model = CelebACAE()
+PATH = 'celebaCAEv2.pth'
+model = CelebACAEv2()
 model.train()
 model.to(device)
 # v1 for loading up just the model, not the optimizer and stuff
@@ -116,7 +118,7 @@ print(model_loading_format, model_saving_format)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 try:
-    # raise IndentationError
+    #raise IndentationError
     if model_loading_format == "v2":
         checkpoint = torch.load(PATH)
         model.load_state_dict(checkpoint['model_state_dict'])
