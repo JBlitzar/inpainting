@@ -58,3 +58,9 @@ Dialated convolutions actually *reduce* feature map size, add padding to account
 Implemented dialated convs.
 Made the switch to 0-1 instead of 0-255 data, smaller loss values and better training. Had to wrangle the images
 It's good to finally use a dataloader.
+
+Notes while reading paper:
+attention mechanisms
+datasets: *imagenet, *celebahq, places2, paris street view
+SNR error? The peak signal-to-noise ratio (PSNR) is based on the error between corresponding pixels and is used to evaluate the quality of an image in comparison to the true image. The value typically ranges between 20 and 40. A higher value indicates lower distortion
+and better image quality. 
