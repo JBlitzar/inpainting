@@ -9,6 +9,7 @@ from torchvision.transforms.functional import to_tensor
 IMAGE_MAX = 1
 #https://github.com/bonlime/pytorch-tools/blob/master/pytorch_tools/metrics/psnr.py
 #https://github.com/VainF/pytorch-msssim/blob/master/pytorch_msssim/ssim.py
+_MSE = nn.MSELoss()
 class PSNR:
     """Peak Signal to Noise Ratio
     img1 and img2 have range [0, IMAGE_MAX]"""
@@ -18,6 +19,6 @@ class PSNR:
 
     @staticmethod
     def __call__(img1, img2):
-        mse = torch.mean((img1 - img2) ** 2)
-        return 20 * torch.log10(torch.max(img1) / torch.sqrt(mse))
+        mse = _MSE(img1, img2)
+        return 20 * torch.log10(1 / torch.sqrt(mse))
     

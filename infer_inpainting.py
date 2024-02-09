@@ -114,7 +114,6 @@ def take_and_process_image():
         # Run the model
         result, loss, input_image_np = run_model(
             resized_image, top, left, rwidth, rheight)
-
         # Display the original and inpainted images
         display_images(input_image_np, result)
         plt.close()
@@ -132,7 +131,6 @@ def display_images(original, inpainted):
     print(inpainted.shape)
     original_image = Image.fromarray(original)
     inpainted_image = Image.fromarray(inpainted)
-
     # Create a side-by-side display
     combined_image = Image.new(
         'RGB', (original_image.width * 2, original_image.height))

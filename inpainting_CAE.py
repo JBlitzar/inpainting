@@ -19,7 +19,7 @@ from torchvision.transforms import v2
 
 import matplotlib.pyplot as plt
 
-
+QUIET = True
 
 warnings.filterwarnings("default")
 print("imported")
@@ -117,7 +117,7 @@ model_loading_format = "v2"
 model_saving_format = "v2"
 print(model_loading_format, model_saving_format)
 
-criterion = PSNR()#nn.MSELoss()
+criterion = nn.MSELoss()
 
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 try:
@@ -150,6 +150,8 @@ for epoch in tqdm.trange(num_epochs):
     last_output = None
     for idx, data in enumerate(pbar):
         desc = f"Loss: {round(current_loss,4)}"
+        if QUIET:
+            pbar.set_description(desc)
         #pbar.set_description(f"2dev  | {desc}")
         data = data.to(device)
 
@@ -161,19 +163,23 @@ for epoch in tqdm.trange(num_epochs):
         last_input = inputs
         # print(torch.all(inputs.eq(data)))
         optimizer.zero_grad()
-        pbar.set_description(f"eval  | {desc}")
+        if not QUIET:
+            pbar.set_description(f"eval  | {desc}")
         outputs = model(inputs)
         last_output = outputs
         # changed from  criterion(outputs, inputs)  because we want reconstructed to equal output
-        pbar.set_description(f"loss  | {desc}")
+        if not QUIET:
+            pbar.set_description(f"loss  | {desc}")
         loss = criterion(outputs, data).to(device)
         current_loss = loss.item()
         running_sum += loss.item()
         desc = f"Loss: {round(current_loss,4)}"
-        pbar.set_description(f"back  | {desc}")
+        if not QUIET:
+            pbar.set_description(f"back  | {desc}")
         loss.backward()
         optimizer.step()
-        pbar.set_description(f"clean | {desc}")
+        if not QUIET:
+            pbar.set_description(f"clean | {desc}")
         if idx % 50 == 0:
             if model_saving_format == "v2":
                 torch.save({
