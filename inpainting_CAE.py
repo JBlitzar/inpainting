@@ -2,7 +2,7 @@ import warnings
 warnings.filterwarnings("ignore")  # libressl thing
 from inpainting_model import Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, CelebACAEv2, black_out_random_rectangle_centered
 from inpainting_CAE_setup import CelebADataset
-from losses import SSIM
+from losses import PSNR
 from colorama import Fore, Back, Style
 import torch
 import torch.nn as nn
@@ -117,7 +117,7 @@ model_loading_format = "v2"
 model_saving_format = "v2"
 print(model_loading_format, model_saving_format)
 
-criterion = SSIM()#nn.MSELoss()
+criterion = PSNR()#nn.MSELoss()
 
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 try:
