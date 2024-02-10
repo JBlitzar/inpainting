@@ -211,6 +211,7 @@ for epoch in tqdm.trange(num_epochs):
     axes[1].set_title('Reconstructed')
     axes[1].axis('off')  # Hide the axes ticks
     plt.savefig(f"train_imgs/image_{epoch}.png")
+    plt.close()
     if model_saving_format == "v2":
 
         torch.save({
