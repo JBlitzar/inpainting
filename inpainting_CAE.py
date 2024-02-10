@@ -36,7 +36,7 @@ if torch.backends.mps.is_available():
 learning_rate = 0.005
 batch_size = 128
 num_epochs = 128
-rectangle_fn = black_out_random_rectangle_centered
+rectangle_fn = black_out_random_rectangle
 print("Hyperparameters: ")
 print(learning_rate, batch_size, num_epochs, rectangle_fn)
 
