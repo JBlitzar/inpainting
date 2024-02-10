@@ -1,6 +1,9 @@
 import torch.nn as nn
 import torch
-
+import os
+def alert(msg):
+    os.system(
+    f"osascript -e 'display alert \"{msg}\"' &")
 
 def box_out(tensor, top, left, rwidth, rheight):
     batch_size, num_channels, height, width = list(tensor.shape)
@@ -219,7 +222,7 @@ class CelebACAE(nn.Module):
     
 class CelebACAEv2(nn.Module):
     def __init__(self):
-        self.quiet = True
+        self.quiet = False
         super(CelebACAEv2, self).__init__()
 
         # Encoder layers
@@ -256,6 +259,7 @@ class CelebACAEv2(nn.Module):
         )
 
     def forward(self, x):
+        print("hi")
         # x = x / 255
         # Define forward pass
         if(not self.quiet):
@@ -275,6 +279,86 @@ class CelebACAEv2(nn.Module):
                 print(f"{layer.__class__.__name__} Output Size:", x.size())
 
         # x = x * 255
+        return x
+class CelebAUnet(nn.Module):
+    def __init__(self):
+        self.quiet = True
+        super(CelebAUnet, self).__init__()
+
+        # Encoder layers
+        self.encoder = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+
+        # Decoder layers
+        self.decoder = nn.Sequential(
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Upsample(scale_factor=2, mode='nearest'),  
+
+            nn.Conv2d(512, 256, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Upsample(scale_factor=2, mode='nearest'),
+
+            nn.Conv2d(384, 128, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Upsample(scale_factor=2, mode='nearest'),
+            nn.Conv2d(192, 64, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        # Define forward pass
+        if not self.quiet:
+            print("Input Size:", x.size())
+
+        skip_connections = []
+
+        # Encoder forward pass with saving skip connections
+        for layer in self.encoder:
+            x = layer(x)
+            if "pool" in layer.__class__.__name__.lower():
+                skip_connections.append(x.clone())  # Save skip connection
+            if not self.quiet:
+                print(f"{layer.__class__.__name__} Output Size:", x.size())
+           
+        if not self.quiet:
+            print("\n=====Begin decoding=====\n")
+        skipnum = 1
+        # Decoder forward pass with using skip connections
+        for i, layer in enumerate(self.decoder):
+            if "Upsample" in layer.__class__.__name__:
+                x = torch.cat((x, skip_connections[-(skipnum)]), dim=1)  # Concatenate with skip connection
+                x = layer(x)
+                
+                skipnum += 1
+            else:
+                x = layer(x)
+
+            if not self.quiet:
+                print(f"{layer.__class__.__name__} Output Size:", x.size())
+
         return x
 
 # class CelebACAEv2(nn.Module):
