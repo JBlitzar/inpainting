@@ -1,6 +1,6 @@
 import warnings
 warnings.filterwarnings("ignore")  # libressl thing
-from inpainting_model import CelebAUnet,Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, CelebACAEv2, black_out_random_rectangle_centered
+from inpainting_model import CelebAUnetv2,CelebAUnet,Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, CelebACAEv2, black_out_random_rectangle_centered
 from inpainting_CAE_setup import CelebADataset
 from losses import PSNR
 from colorama import Fore, Back, Style
@@ -108,8 +108,8 @@ print("Data loaded.")
 
 
 # Instantiate model, define loss function, and optimizer
-PATH = 'celebaUnet.pth'
-model = CelebAUnet()
+PATH = 'celebaUnetv2.pth'
+model = CelebAUnetv2()
 model.train()
 model.to(device)
 # v1 for loading up just the model, not the optimizer and stuff
@@ -139,7 +139,7 @@ except Exception as e:
     print("=========IMPORTANT=========")
 
 print("model initialized")
-writer = SummaryWriter()
+writer = None
 # Training loop
 for epoch in tqdm.trange(num_epochs):
     pbar = tqdm.tqdm(data_loader, leave=False)
@@ -190,6 +190,8 @@ for epoch in tqdm.trange(num_epochs):
                 }, PATH)
             else:
                 torch.save(model.state_dict(), PATH)
+    if not writer:
+        writer = SummaryWriter()
     writer.add_scalar("Loss/train", running_sum/(i+1), epoch)
     print("=======================================================")
     print(

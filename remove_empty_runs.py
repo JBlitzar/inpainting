@@ -13,7 +13,8 @@ def remove_small_subfolders(root_folder, threshold_bytes=100):
             # Uncomment the line below to actually remove the folder
             shutil.rmtree(folder_path)
         else:
-            print(f"not removing {folder_path}")
+            pass
+            #print(f"not removing {folder_path}")
 
 runs_folder_path = 'runs'
 remove_small_subfolders(runs_folder_path)
