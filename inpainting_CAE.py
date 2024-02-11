@@ -140,6 +140,7 @@ except Exception as e:
 
 print("model initialized")
 writer = None
+prev_loss = 1000
 # Training loop
 for epoch in tqdm.trange(num_epochs):
     pbar = tqdm.tqdm(data_loader, leave=False)
@@ -180,7 +181,7 @@ for epoch in tqdm.trange(num_epochs):
         optimizer.step()
         if not QUIET:
             pbar.set_description(f"clean | {desc}")
-        if idx % 50 == 0:
+        """if idx % 50 == 0:
             if model_saving_format == "v2":
                 torch.save({
                     'epoch': epoch,
@@ -189,7 +190,7 @@ for epoch in tqdm.trange(num_epochs):
                     'loss': loss,
                 }, PATH)
             else:
-                torch.save(model.state_dict(), PATH)
+                torch.save(model.state_dict(), PATH)"""
     if not writer:
         writer = SummaryWriter()
     writer.add_scalar("Loss/train", running_sum/(i+1), epoch)
@@ -214,16 +215,36 @@ for epoch in tqdm.trange(num_epochs):
     axes[1].axis('off')  # Hide the axes ticks
     plt.savefig(f"train_imgs/image_{epoch}.png")
     plt.close()
-    if model_saving_format == "v2":
-
-        torch.save({
-            'epoch': epoch,
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'loss': loss,
-        }, PATH)
+    if  (running_sum/(i+1)) - prev_loss > 0.1:
+        try:
+            #raise IndentationError
+            if model_loading_format == "v2":
+                checkpoint = torch.load(PATH)
+                model.load_state_dict(checkpoint['model_state_dict'])
+                optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+                epoch = checkpoint['epoch']
+                loss = checkpoint['loss']
+            else:
+                model.load_state_dict(torch.load(PATH))
+            print("Model loaded", PATH)
+        except Exception as e:
+            print("=========IMPORTANT=========")
+            print(e)
+            print(Fore.YELLOW+"Cancelled model loading"+Style.RESET_ALL)
+            print()
+            print("=========IMPORTANT=========")
     else:
-        torch.save(model.state_dict(), PATH)
+        prev_loss = (running_sum/(i+1))
+        if model_saving_format == "v2":
+
+            torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': loss,
+            }, PATH)
+        else:
+            torch.save(model.state_dict(), PATH)
 
 # Save the trained model if needed
 # torch.save(model.state_dict(), PATH)
