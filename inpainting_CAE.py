@@ -33,7 +33,7 @@ if torch.backends.mps.is_available():
     device = "mps"
 
 # hyperparameters
-learning_rate = 0.005
+learning_rate = 0.001
 batch_size = 128
 num_epochs = 128
 rectangle_fn = black_out_random_rectangle_centered
