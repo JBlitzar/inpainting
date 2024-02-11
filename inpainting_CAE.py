@@ -1,7 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore")  # libressl thing
 from inpainting_model import CelebAUnetv2,CelebAUnet,Autoencoder_CAE, black_out_random_rectangle, Autoencoder_CAEv2, Autoencoder_CAEv3, CelebACAE, CelebACAEv2, black_out_random_rectangle_centered
-from inpainting_CAE_setup import CelebADataset
+from inpainting_CAE_setup import CelebADataset,ValidationLossEarlyStopping
 from losses import PSNR
 from colorama import Fore, Back, Style
 import torch
@@ -16,6 +16,7 @@ import os
 from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.transforms import v2
+from torch.utils.data import random_split
 
 import matplotlib.pyplot as plt
 
@@ -103,6 +104,18 @@ transforms = v2.Compose([  # epic data augmentation
     v2.RandomHorizontalFlip(p=0.5),
 ])
 dataset = CelebADataset(transform=transforms)
+validation_split = 0.2
+
+# Calculate the sizes of training and validation sets
+dataset_size = len(dataset)
+validation_size = int(validation_split * dataset_size)
+train_size = dataset_size - validation_size
+
+# Use random_split to get the indices for training and validation sets
+train_dataset, val_dataset = random_split(dataset, [train_size, validation_size])
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+
 data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 print("Data loaded.")
 
@@ -139,17 +152,35 @@ except Exception as e:
     print("=========IMPORTANT=========")
 
 print("model initialized")
+def validate(model, criterion, val_loader, device):
+    model.eval()  # Set the model to evaluation mode
+    total_loss = 0.0
+
+    with torch.no_grad():
+        for data in val_loader:
+            data = data.to(device)
+            inputs = data.detach().clone().to(device)
+            rectangle_fn(inputs)
+            
+            outputs = model(inputs)
+            
+            loss = criterion(outputs, data).to(device)
+            total_loss += loss.item()
+
+    average_loss = total_loss / len(val_loader)
+    return average_loss
 writer = None
 prev_loss = 1000
+earlyStopping = ValidationLossEarlyStopping()
 # Training loop
 for epoch in tqdm.trange(num_epochs):
-    pbar = tqdm.tqdm(data_loader, leave=False)
+    pbar = tqdm.tqdm(train_loader, leave=False)
     current_loss = 0
     running_sum = 0
     i = 0
     last_input = None
     last_output = None
-
+    model.train()
     for idx, data in enumerate(pbar):
         desc = f"Loss: {round(current_loss,4)}"
         if QUIET:
@@ -196,11 +227,20 @@ for epoch in tqdm.trange(num_epochs):
                 }, PATH)
             else:
                 torch.save(model.state_dict(), PATH)"""
-        
+    
+    avg_val_loss = validate(model, criterion, val_loader, device)
 
     if not writer:
         writer = SummaryWriter()
     writer.add_scalar("Loss/train", running_sum/(i+1), epoch)
+    writer.add_scalar("Loss/val", avg_val_loss, epoch)
+    if(earlyStopping.early_stop_check(avg_val_loss)):
+        print("=======================================================")
+        print(
+            Fore.CYAN+'Early Stop triggered'+Style.RESET_ALL)
+        print("=======================================================")
+
+        break
 
     print("=======================================================")
     print(
