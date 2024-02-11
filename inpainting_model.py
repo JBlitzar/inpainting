@@ -20,8 +20,8 @@ def black_out_random_rectangle_centered(tensor):
         # Randomly select the position and size of the rectangle
         top = torch.randint(0, int(height/2)-2, (1,)).item()
         left = torch.randint(0, int(width/2)-2, (1,)).item()
-        rect_height = torch.randint(20, int(height/3), (1,)).item()
-        rect_width = torch.randint(20, int(width/3), (1,)).item()
+        rect_height = torch.randint(int(height/4), int(height/2), (1,)).item()
+        rect_width = torch.randint(int(height/4), int(width/2), (1,)).item()
         # Black out the selected rectangle in all channels for the current image
         tensor[i, :, top:min(top+rect_height, height),
                left:min(left+rect_width, width)] = 0
@@ -405,7 +405,7 @@ class CelebAUnetv2(nn.Module):
     ('relu5', nn.ReLU()),
     ('upsample3', nn.Upsample(scale_factor=2, mode='nearest')),
     ('conv6', nn.Conv2d(128, 64, kernel_size=3, stride=1, padding=1)),
-    ("relu5",nn.ReLU()),
+    ("relu6",nn.ReLU()),
     ('conv7', nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1)),
     ('sigmoid', nn.Sigmoid())
 ]))
