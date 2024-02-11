@@ -149,6 +149,7 @@ for epoch in tqdm.trange(num_epochs):
     i = 0
     last_input = None
     last_output = None
+
     for idx, data in enumerate(pbar):
         desc = f"Loss: {round(current_loss,4)}"
         if QUIET:
@@ -163,11 +164,13 @@ for epoch in tqdm.trange(num_epochs):
         rectangle_fn(inputs)
         last_input = inputs
         # print(torch.all(inputs.eq(data)))
+
         optimizer.zero_grad()
         if not QUIET:
             pbar.set_description(f"eval  | {desc}")
         outputs = model(inputs)
         last_output = outputs
+
         # changed from  criterion(outputs, inputs)  because we want reconstructed to equal output
         if not QUIET:
             pbar.set_description(f"loss  | {desc}")
@@ -175,9 +178,11 @@ for epoch in tqdm.trange(num_epochs):
         current_loss = loss.item()
         running_sum += loss.item()
         desc = f"Loss: {round(current_loss,4)}"
+
         if not QUIET:
             pbar.set_description(f"back  | {desc}")
         loss.backward()
+
         optimizer.step()
         if not QUIET:
             pbar.set_description(f"clean | {desc}")
@@ -191,13 +196,17 @@ for epoch in tqdm.trange(num_epochs):
                 }, PATH)
             else:
                 torch.save(model.state_dict(), PATH)"""
+        
+
     if not writer:
         writer = SummaryWriter()
     writer.add_scalar("Loss/train", running_sum/(i+1), epoch)
+
     print("=======================================================")
     print(
         Fore.CYAN+f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}'+Style.RESET_ALL)
     print("=======================================================")
+
     comparisoninp = inputs[0]
     comparisonout = outputs[0]
     comparisoninp = torch.transpose(comparisoninp, 0, 2)
@@ -215,7 +224,10 @@ for epoch in tqdm.trange(num_epochs):
     axes[1].axis('off')  # Hide the axes ticks
     plt.savefig(f"train_imgs/image_{epoch}.png")
     plt.close()
+
+
     if  (running_sum/(i+1)) - prev_loss > 0.1:
+
         try:
             #raise IndentationError
             if model_loading_format == "v2":
@@ -233,8 +245,11 @@ for epoch in tqdm.trange(num_epochs):
             print(Fore.YELLOW+"Cancelled model loading"+Style.RESET_ALL)
             print()
             print("=========IMPORTANT=========")
+
     else:
+
         prev_loss = (running_sum/(i+1))
+
         if model_saving_format == "v2":
 
             torch.save({
@@ -245,6 +260,8 @@ for epoch in tqdm.trange(num_epochs):
             }, PATH)
         else:
             torch.save(model.state_dict(), PATH)
+
+
 
 # Save the trained model if needed
 # torch.save(model.state_dict(), PATH)
@@ -257,7 +274,9 @@ if model_saving_format == "v2":
     }, PATH)
 else:
     torch.save(model.state_dict(), PATH)
+
 writer.flush()
+
 print("Done")
 os.system("say 'All done'")
 currenttime = datetime.now().strftime("%I:%M:%S %p")
