@@ -76,3 +76,8 @@ Discriminator after reconstruction?
 t'=Decoder(Encoder(T))
 Loss between reconstructed and original, but also you can have adversarial loss
 This is represented as Lad = maxp Ex∼X[log(D(e))] − Ez∼Z[log(1 − D(G(z)))], where D is the discriminator, G is the generator, X is the distribution of real images, and Z is the distribution of the latent space. 
+
+Feb 10
+Autoencoder, by nature, leads to loss of information through the bottleneck
+I implemented U-net architecture with skip connections so that later layers in the decoder can see encoder data. 
+With all skip connections, it had lots of detail but didnt properly fill in black rectangles -- I removed the skip connection on the very last layer
