@@ -81,3 +81,8 @@ Feb 10
 Autoencoder, by nature, leads to loss of information through the bottleneck
 I implemented U-net architecture with skip connections so that later layers in the decoder can see encoder data. 
 With all skip connections, it had lots of detail but didnt properly fill in black rectangles -- I removed the skip connection on the very last layer
+
+Feb 11:
+Training with unet - Experienced weird instabilities. After ~10 epochs, loss jumps up and stays horizontal + images are perfectly rgb-black. Once, rgb-red (sus)
+I implemented a "training wheels" feature that reverts the model if that happens to it -- sign of deeper problem. 
+Trained well with small rectangles, retrained with bigger ones and performance improved further. 

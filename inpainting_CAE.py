@@ -234,13 +234,14 @@ for epoch in tqdm.trange(num_epochs):
         writer = SummaryWriter()
     writer.add_scalar("Loss/train", running_sum/(i+1), epoch)
     writer.add_scalar("Loss/val", avg_val_loss, epoch)
-    if(earlyStopping.early_stop_check(avg_val_loss)):
-        print("=======================================================")
-        print(
-            Fore.CYAN+'Early Stop triggered'+Style.RESET_ALL)
-        print("=======================================================")
+    
+    # if(earlyStopping.early_stop_check(avg_val_loss)):
+    #     print("=======================================================")
+    #     print(
+    #         Fore.CYAN+'Early Stop triggered'+Style.RESET_ALL)
+    #     print("=======================================================")
 
-        break
+    #     break
 
     print("=======================================================")
     print(
