@@ -100,10 +100,11 @@ transforms = v2.Compose([  # epic data augmentation
     v2.Compose([v2.ToImage(), v2.ToDtype(torch.float32, scale=True)]),#v2.ToTensor(), # toTensor is deprecated
     v2.RandomRotation(20),
     v2.RandomResizedCrop(
-        size=(128, 128), antialias=True, scale=(0.8, 1.0)),
+        size=(128, 128), antialias=True, scale=(0.8, 1.0)), # augmentations are only supposed to happen on the training set.
     v2.RandomHorizontalFlip(p=0.5),
 ])
-dataset = CelebADataset(transform=transforms)
+dataset = CelebADataset()#transform=transforms)
+# augmentations only on train
 validation_split = 0.2
 
 # Calculate the sizes of training and validation sets
@@ -113,10 +114,13 @@ train_size = dataset_size - validation_size
 
 # Use random_split to get the indices for training and validation sets
 train_dataset, val_dataset = random_split(dataset, [train_size, validation_size])
+
+train_dataset._add_transform(transforms) # augmentations only on train
+
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
-data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+#data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 print("Data loaded.")
 
 

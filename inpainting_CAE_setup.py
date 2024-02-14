@@ -7,6 +7,9 @@ class CelebADataset(torch.utils.data.Dataset):
     def __init__(self, image_paths=glob.glob("celeba_hq_256/*.jpg"), transform=None):
         self.image_paths = image_paths
         self.transform = transform
+    
+    def _add_transform(self, transform):
+        self.transform = transform
 
     def __len__(self):
         return len(self.image_paths)
